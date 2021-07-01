@@ -1,0 +1,8 @@
+<form>
+    <select name="name">
+        <%= for name <- @names do %>
+            <option value="<%= name %>"><%= name %></option>
+        <% end %>
+    </select>
+    <input type="submit" value="選択">
+</form>
