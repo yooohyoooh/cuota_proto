@@ -9,6 +9,25 @@
   <%= file_input f, :file %>
   <%= error_tag f, :file %>
 
+  <%= label f, :email %>
+  <%= select f, :email,@emails %>
+  <%= error_tag f, :email %>
+
+  <%= select  name="email[]" size="3" style="vertical-align: middle; height: 60px" multiple %>
+        <%= for user <- @users do %>
+            <option value="<%= user.email %>"><%= user.user_name %> | <%= user.email %></option>
+        <% end %>
+    </select>
+    <!--<input type="file" name="filename[]" multiple>-->
+
+<!-- 用件  -->
+    <select name="matter[]">
+        <option value="提出">提出</option>
+        <option value="共有">共有</option>
+        <option value="報告">報告</option>
+    </select>
+
+
 
   <div>
     <%= submit "Save" %>

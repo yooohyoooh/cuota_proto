@@ -29,6 +29,8 @@ defmodule CuotaProtoWeb.Router do
 
     resources "/fileuploads", FileUploadController
 
+    resources "/messages", MessageController
+
   end
 
   # Other scopes may use custom stacks.
@@ -49,6 +51,8 @@ defmodule CuotaProtoWeb.Router do
     scope "/" do
       pipe_through :browser
       live_dashboard "/dashboard", metrics: CuotaProtoWeb.Telemetry
+
+
     end
   end
 
