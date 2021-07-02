@@ -1,8 +1,10 @@
-<form>
-    <select name="name">
+<%= form_tag("/path", method: :path) %>
+    <select name="name[]" multiple>
         <%= for name <- @names do %>
             <option value="<%= name %>"><%= name %></option>
         <% end %>
     </select>
+    <!--<input type="file" name="filename[]" multiple>-->
+
     <input type="submit" value="選択">
 </form>

@@ -19,6 +19,7 @@ defmodule CuotaProtoWeb.Router do
     get "/", PageController, :index
     resources "/users", UserController
     get "/to", PageController, :to
+    post "/path", PageController, :path
   end
 
   # Other scopes may use custom stacks.

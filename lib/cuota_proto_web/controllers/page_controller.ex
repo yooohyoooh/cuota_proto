@@ -13,4 +13,9 @@ defmodule CuotaProtoWeb.PageController do
     names = Enum.map(users, & &1.name)
     render(conn, "to.html", names: names)
   end
+
+  def path(conn, params) do
+    IO.inspect(params)
+    render(conn, "path.html", params: params)
+  end
 end
