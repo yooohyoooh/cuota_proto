@@ -13,8 +13,8 @@ defmodule CuotaProtoWeb.PageController do
   def to(conn, params) do
     IO.inspect(params)
     users = Repo.all(User)
-    email = Enum.map(users, & &1.email)
-    render(conn, "to.html", names: email)
+    # email = Enum.map(users, & &1.email)
+    render(conn, "to.html", users: users)
   end
 
   def path(conn, params) do

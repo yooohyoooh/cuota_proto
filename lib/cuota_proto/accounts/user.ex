@@ -8,6 +8,7 @@ defmodule CuotaProto.Accounts.User do
     field :password, :string, virtual: true
     field :hashed_password, :string
     field :confirmed_at, :naive_datetime
+    field :user_name, :string
 
     timestamps()
   end
@@ -31,7 +32,7 @@ defmodule CuotaProto.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email, :password])
+    |> cast(attrs, [:user_name, :email, :password])
     |> validate_email()
     |> validate_password(opts)
   end
