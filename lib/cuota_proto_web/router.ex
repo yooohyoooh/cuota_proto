@@ -24,9 +24,12 @@ defmodule CuotaProtoWeb.Router do
     resources "/matters", MatterController
     post "/", PageController, :add_matter
 
-    resources "/users", UserController
     get "/to", PageController, :to
     post "/path", PageController, :path
+
+    resources "/fileuploads", FileUploadController
+
+    resources "/messages", MessageController
 
   end
 
@@ -48,6 +51,8 @@ defmodule CuotaProtoWeb.Router do
     scope "/" do
       pipe_through :browser
       live_dashboard "/dashboard", metrics: CuotaProtoWeb.Telemetry
+
+
     end
   end
 

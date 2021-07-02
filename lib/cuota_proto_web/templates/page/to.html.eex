@@ -1,8 +1,8 @@
 <!-- 宛先 -->
 <%= form_tag("/path", method: :path) %>
-    <select name="name[]" multiple>
-        <%= for name <- @names do %>
-            <option value="<%= name %>"><%= name %></option>
+    <select name="email[]" size="3" style="vertical-align: middle; height: 60px" multiple>
+        <%= for user <- @users do %>
+            <option value="<%= user.email %>"><%= user.user_name %> | <%= user.email %></option>
         <% end %>
     </select>
     <!--<input type="file" name="filename[]" multiple>-->
@@ -13,6 +13,8 @@
         <option value="共有">共有</option>
         <option value="報告">報告</option>
     </select>
+
+
 
 <!-- 送信 -->
     <input type="submit" value="選択">

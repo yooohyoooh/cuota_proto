@@ -1,0 +1,28 @@
+<h1>Listing Fileuploads</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Filename</th>
+      <th>Filedata</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for file_upload <- @fileuploads do %>
+    <tr>
+      <td><%= file_upload.filename %></td>
+      <td><%= file_upload.filedata %></td>
+
+      <td>
+        <span><%= link "Show", to: Routes.file_upload_path(@conn, :show, file_upload) %></span>
+        <span><%= link "Edit", to: Routes.file_upload_path(@conn, :edit, file_upload) %></span>
+        <span><%= link "Delete", to: Routes.file_upload_path(@conn, :delete, file_upload), method: :delete, data: [confirm: "Are you sure?"] %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New File upload", to: Routes.file_upload_path(@conn, :new) %></span>
