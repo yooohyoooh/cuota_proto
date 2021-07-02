@@ -1,0 +1,4 @@
+<h1>テスト</h1>
+<%= for name <- @params["name"] do%>
+<p><%= name %></p>
+<% end %>

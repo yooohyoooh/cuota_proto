@@ -1,0 +1,19 @@
+<!-- 宛先 -->
+<%= form_tag("/path", method: :path) %>
+    <select name="name[]" multiple>
+        <%= for name <- @names do %>
+            <option value="<%= name %>"><%= name %></option>
+        <% end %>
+    </select>
+    <!--<input type="file" name="filename[]" multiple>-->
+
+<!-- 用件  -->
+    <select name="matter[]">
+        <option value="提出">提出</option>
+        <option value="共有">共有</option>
+        <option value="報告">報告</option>
+    </select>
+
+<!-- 送信 -->
+    <input type="submit" value="選択">
+</form>

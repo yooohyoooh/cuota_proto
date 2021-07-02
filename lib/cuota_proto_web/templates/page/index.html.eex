@@ -5,11 +5,4 @@
 
 <section class="row">
 
-<%= form_for @changeset, Routes.page_path(@conn, :add_matter), fn f -> %>
-  <%= select f, :name, ["提出", "共有", "報告"], value: nil %>
-
-  <%= submit "送信" %>
-<% end %>
-
-
 </section>
