@@ -24,7 +24,6 @@ defmodule CuotaProtoWeb.Router do
     resources "/matters", MatterController
     post "/", PageController, :add_matter
 
-    resources "/users", UserController
     get "/to", PageController, :to
     post "/path", PageController, :path
 

@@ -7,6 +7,13 @@
     </div>
   <% end %>
 
+<<<<<<< HEAD
+=======
+  <%= label f, :user_name %>
+  <%= text_input f, :user_name, required: true %>
+  <%= error_tag f, :user_name %>
+
+>>>>>>> 2cf5f314f275a665c4fa619f3a3322c55b51ef4f
   <%= label f, :email %>
   <%= email_input f, :email, required: true %>
   <%= error_tag f, :email %>
