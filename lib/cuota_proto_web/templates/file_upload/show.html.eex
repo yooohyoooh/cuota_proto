@@ -1,0 +1,18 @@
+<h1>Show File upload</h1>
+
+<ul>
+
+  <li>
+    <strong>Filename:</strong>
+    <%= @file_upload.filename %>
+  </li>
+
+  <li>
+    <strong>Filedata:</strong>
+    <%= @file_upload.filedata %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.file_upload_path(@conn, :edit, @file_upload) %></span>
+<span><%= link "Back", to: Routes.file_upload_path(@conn, :index) %></span>

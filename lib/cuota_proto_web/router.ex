@@ -28,6 +28,8 @@ defmodule CuotaProtoWeb.Router do
     get "/to", PageController, :to
     post "/path", PageController, :path
 
+    resources "/fileuploads", FileUploadController
+
   end
 
   # Other scopes may use custom stacks.
