@@ -5,8 +5,8 @@ defmodule CuotaProtoWeb.FileUploadController do
   alias CuotaProto.FileUploads.FileUpload
 
   alias CuotaProto.Repo
-  alias CuotaProto.Accounts
   alias CuotaProto.Accounts.User
+  alias CuotaProto.Businesses.Matter
 
   def index(conn, _params) do
     fileuploads = FileUploads.list_fileuploads()
@@ -17,10 +17,14 @@ defmodule CuotaProtoWeb.FileUploadController do
     changeset = FileUploads.change_file_upload(%FileUpload{})
     email_list = Repo.all(User)
     |> Enum.map(& &1.email)
+
     IO.puts("**----------")
     IO.inspect(email_list)
     IO.puts("----------**")
-    render(conn, "new.html", changeset: changeset, emails: email_list)
+
+    matter_list = Repo.all(Matter)
+    |> Enum.map(& &1.name)
+    render(conn, "new.html", changeset: changeset, emails: email_list, matters: matter_list)
   end
 
   def create(conn, %{"file_upload" => file_upload_params}) do
@@ -31,17 +35,17 @@ defmodule CuotaProtoWeb.FileUploadController do
     IO.inspect(data)
     IO.inspect(file.filename)
     mapdata = %{filedata: data, filename: file.filename}
-    case FileUploads.create_file_upload(mapdata) do
-      {:ok, file_upload} ->
-        conn
-        |> put_flash(:info, "File upload created successfully.")
-        |> redirect(to: Routes.file_upload_path(conn, :show, file_upload))
+    # case FileUploads.create_file_upload(mapdata) do
+    #   {:ok, file_upload} ->
+    #     conn
+    #     |> put_flash(:info, "File upload created successfully.")
+    #     |> redirect(to: Routes.file_upload_path(conn, :show, file_upload))
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "new.html", changeset: changeset)
-    end
-    # fileuploads = FileUploads.list_fileuploads()
-    # render(conn, "index.html", fileuploads: fileuploads)
+    #   {:error, %Ecto.Changeset{} = changeset} ->
+    #     render(conn, "new.html", changeset: changeset)
+    # end
+    fileuploads = FileUploads.list_fileuploads()
+    render(conn, "index.html", fileuploads: fileuploads)
 
   end
 

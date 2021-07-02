@@ -11,14 +11,13 @@
 
   <%= label f, :email %>
   <%= select f, :email, @emails %>
-  <%# <%= select f, :email, Enum.map(@emails, fn e -> Enum.at(e, 1) end) %> %>
+  <%# <%= select f, :email, Enum.map(@emails, fn e -> Enum.at(e, 1) end) %> 
   <%= error_tag f, :email %>
 
-<!--
-  <%# <%= label f, :matter %> %>
-  <%# <%= select f, :matter%> %>
-  <%# <%= error_tag f, :matter %> %>
--->
+  <%= label f, :matter %>
+  <%= select f, :matter, @matters %>
+  <%= error_tag f, :matter %>
+
   <div>
     <%= submit "Save" %>
   </div>
