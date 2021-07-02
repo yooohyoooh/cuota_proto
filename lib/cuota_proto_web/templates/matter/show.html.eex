@@ -1,0 +1,13 @@
+<h1>Show Matter</h1>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @matter.name %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.matter_path(@conn, :edit, @matter) %></span>
+<span><%= link "Back", to: Routes.matter_path(@conn, :index) %></span>

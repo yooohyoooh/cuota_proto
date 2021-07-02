@@ -17,6 +17,8 @@ defmodule CuotaProtoWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    resources "/matters", MatterController
+    post "/", PageController, :add_matter
   end
 
   # Other scopes may use custom stacks.

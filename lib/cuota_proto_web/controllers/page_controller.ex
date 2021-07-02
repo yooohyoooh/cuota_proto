@@ -1,7 +1,11 @@
 defmodule CuotaProtoWeb.PageController do
   use CuotaProtoWeb, :controller
+  alias CuotaProto.Businesses.Matter
 
   def index(conn, _params) do
-    render(conn, "index.html")
+    changeset = Matter.changeset(%Matter{}, %{})
+    render(conn, "index.html", changeset: changeset)
   end
+
+
 end
