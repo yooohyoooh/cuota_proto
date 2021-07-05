@@ -3,10 +3,10 @@ defmodule CuotaProto.Util.Email do
 
   def create_email do
     new_email(
-      from: "cuotaproto@gmail.com",
-      subject: "Welcome to the app.",
-      html_body: "<strong>Thanks for joining!</strong>",
-      text_body: "Thanks for joining!"
+      from: "yasaki418@gmail.com",
+      subject: "7月5日テスト",
+      html_body: "<strong>このメールは7月5日のテスト用です</strong>",
+      text_body: "このメールは7月5日のテスト用です"
     )
   end
 end

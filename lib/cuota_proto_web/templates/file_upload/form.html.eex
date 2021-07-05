@@ -24,6 +24,6 @@
   <%= error_tag f, :matter %>
 
   <div>
-    <%= submit "Save" %>
+    <%= submit "送信" %>
   </div>
 <% end %>
