@@ -31,6 +31,12 @@ config :phoenix, :json_library, Jason
 import_config "#{Mix.env()}.exs"
 
 
+
 config :cuota_proto, CuotaProto.Util.Mailer,
-  adapter: Bamboo.SendGridAdapter,
-  api_key: "my_api_key"
+adapter: Bamboo.SendGridAdapter,
+api_key: System.get_env("EX_API_SENDGRID"),
+  # or {:system, “SENDGRID_API_KEY”},
+  # or {ModuleName, :method_name, []}
+hackney_opts: [
+  recv_timeout: :timer.minutes(1)
+]

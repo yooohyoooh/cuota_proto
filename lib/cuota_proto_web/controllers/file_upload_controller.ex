@@ -26,8 +26,6 @@ defmodule CuotaProtoWeb.FileUploadController do
     IO.inspect(email_list)
     IO.puts("----------**")
 
-    # Email.create_email()
-    # |> Mailer.deliver_now!()
     matter_list = Repo.all(Matter)
     |> Enum.map(& &1.name)
     render(conn, "new.html", changeset: changeset, emails: email_list, matters: matter_list)
@@ -48,17 +46,20 @@ defmodule CuotaProtoWeb.FileUploadController do
     Enum.map(file, & &1.filename)
     |> IO.inspect()
 
+    data = Enum.zip(filedata, filename)
+
     mapdata =
-    Enum.zip(filedata, filename)
+    data
     |> Enum.map(fn {data, name} -> %{filedata: data, filename: name} end)
     |> IO.inspect()
 
 
-    matter= Matter |> Repo.get_by(name: file_upload_params["matter"])
-    |> IO.inspect
+    # matter= Matter |> Repo.get_by(name: file_upload_params["matter"])
+    # |> IO.inspect
 
-    user = User |> Repo.get_by(email: file_upload_params["email"])
-    |> IO.inspect
+    # user_id = Enum.map(file_upload_params["email"], &User |> Repo.get_by(email: &1))
+    # |> Enum.map(& &1.id)
+    # |> IO.inspect
 
     Enum.map(mapdata, fn data ->
       case FileUploads.create_file_upload(data) do
@@ -73,17 +74,30 @@ defmodule CuotaProtoWeb.FileUploadController do
       end
     end)
 
-    file_id = Enum.map(filename, & FileUpload |> Repo.get_by(filename: &1))
-    |> Enum.map(& &1.id)
-    |> IO.inspect
+    # file_id = Enum.map(filename, & FileUpload |> Repo.get_by(filename: &1))
+    # |> Enum.map(& &1.id)
+    # |> IO.inspect
 
-    messagemap =
-    %{to_id: user.id, matter_id: matter.id, file_id: file_id}
-    |> IO.inspect
-    |> Messages.create_message()
-    |> IO.inspect
+    # messagemap =
+    # %{to_id: user_id, matter_id: [matter.id], file_id: file_id}
+    # |> IO.inspect
+    # |> Messages.create_message()
+    # |> IO.inspect
 
-    IO.puts("成功")
+    #IO.puts("成功")
+
+    for email <- file_upload_params["email"] do
+      mails =
+      Email.create_email
+      |> Bamboo.Email.to(email)
+      mailfiles = Enum.reduce(data, mails, fn {filedata, filename}, acc -> Bamboo.Email.put_attachment(acc, %Bamboo.Attachment{filename: filename, data: filedata})end)
+      # for {filedata, filename} <- data do
+      #   Bamboo.Email.put_attachment(%Bamboo.Attachment{filename: filename, data: filedata})
+      # end
+
+      IO.inspect(mailfiles)
+      Mailer.deliver_now!(mailfiles)
+    end
 
     fileuploads = FileUploads.list_fileuploads()
     render(conn, "index.html", fileuploads: fileuploads)
