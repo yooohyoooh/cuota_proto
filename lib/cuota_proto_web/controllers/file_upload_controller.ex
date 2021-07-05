@@ -24,8 +24,7 @@ defmodule CuotaProtoWeb.FileUploadController do
     IO.inspect(email_list)
     IO.puts("----------**")
 
-    Email.create_email()
-    |> Mailer.deliver_now!()
+
     matter_list = Repo.all(Matter)
     |> Enum.map(& &1.name)
     render(conn, "new.html", changeset: changeset, emails: email_list, matters: matter_list)
@@ -39,17 +38,22 @@ defmodule CuotaProtoWeb.FileUploadController do
     IO.inspect(data)
     IO.inspect(file.filename)
     mapdata = %{filedata: data, filename: file.filename}
-     case FileUploads.create_file_upload(mapdata) do
-      {:ok, file_upload} ->
-        conn
-         |> put_flash(:info, "File upload created successfully.")
-        |> redirect(to: Routes.file_upload_path(conn, :show, file_upload))
 
-       {:error, %Ecto.Changeset{} = changeset} ->
-         render(conn, "new.html", changeset: changeset)
-     end
-    #fileuploads = FileUploads.list_fileuploads()
-    #render(conn, "index.html", fileuploads: fileuploads)
+    Email.create_email
+    |> Bamboo.Email.to(file_upload_params["email"])
+    |> Bamboo.Email.put_attachment(%Bamboo.Attachment{filename: file.filename, data: data})
+    |> Mailer.deliver_now!()
+    #  case FileUploads.create_file_upload(mapdata) do
+    #   {:ok, file_upload} ->
+    #     conn
+    #      |> put_flash(:info, "File upload created successfully.")
+    #     |> redirect(to: Routes.file_upload_path(conn, :show, file_upload))
+
+    #    {:error, %Ecto.Changeset{} = changeset} ->
+    #      render(conn, "new.html", changeset: changeset)
+    #  end
+    fileuploads = FileUploads.list_fileuploads()
+    render(conn, "index.html", fileuploads: fileuploads)
 
   end
 
