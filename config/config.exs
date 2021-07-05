@@ -34,7 +34,7 @@ import_config "#{Mix.env()}.exs"
 
 config :cuota_proto, CuotaProto.Util.Mailer,
 adapter: Bamboo.SendGridAdapter,
-api_key: "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",
+api_key: System.get_env("EX_API_SENDGRID"),
   # or {:system, “SENDGRID_API_KEY”},
   # or {ModuleName, :method_name, []}
 hackney_opts: [

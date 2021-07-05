@@ -10,7 +10,7 @@
   <%= error_tag f, :file %>
 
   <%= label f, :email %>
-  <%= select f, :email, @emails %>
+  <%= multiple_select f, :email, @emails %>
   <%# <%= select f, :email, Enum.map(@emails, fn e -> Enum.at(e, 1) end) %> 
   <%= error_tag f, :email %>
 

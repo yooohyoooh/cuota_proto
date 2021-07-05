@@ -30,8 +30,10 @@ defmodule CuotaProtoWeb.FileUploadController do
     render(conn, "new.html", changeset: changeset, emails: email_list, matters: matter_list)
   end
 
-  def create(conn, %{"file_upload" => file_upload_params}) do
-    IO.inspect(file_upload_params)
+  def create(conn, %{"file_upload" => file_upload_params} = params) do
+    IO.puts("**----------")
+    IO.inspect(params)
+    IO.puts("----------**")
     file = file_upload_params["file"]
     IO.inspect(file)
     {_, data} = File.read(file.path)
@@ -39,10 +41,17 @@ defmodule CuotaProtoWeb.FileUploadController do
     IO.inspect(file.filename)
     mapdata = %{filedata: data, filename: file.filename}
 
+    for email <- file_upload_params["email"] do
     Email.create_email
-    |> Bamboo.Email.to(file_upload_params["email"])
+    |> Bamboo.Email.to(email)
     |> Bamboo.Email.put_attachment(%Bamboo.Attachment{filename: file.filename, data: data})
     |> Mailer.deliver_now!()
+    end
+
+    # Email.create_email
+    # |> Bamboo.Email.to(file_upload_params["email"])
+    # |> Bamboo.Email.put_attachment(%Bamboo.Attachment{filename: file.filename, data: data})
+    # |> Mailer.deliver_now!()
     #  case FileUploads.create_file_upload(mapdata) do
     #   {:ok, file_upload} ->
     #     conn
