@@ -4,7 +4,7 @@
   <thead>
     <tr>
       <th>Filename</th>
-
+      <th>inserted_at</th>
       <th></th>
     </tr>
   </thead>
@@ -12,7 +12,7 @@
 <%= for file_upload <- @fileuploads do %>
     <tr>
       <td><%= file_upload.filename %></td>
-
+      <td><%= file_upload.inserted_at %></td>
       <td>
         <span><%= link "Delete", to: Routes.file_upload_path(@conn, :delete, file_upload), method: :delete, data: [confirm: "Are you sure?"] %></span>
       </td>
@@ -21,5 +21,5 @@
   </tbody>
 </table>
 
-<span><%= link "New File upload", to: Routes.file_upload_path(@conn, :new) %></span>
+<span><%= button "ファイル送信", to: Routes.file_upload_path(@conn, :new), method: :get, class: "btn"%></span>
 <span><%= button "全件削除", to: Routes.page_path(@conn, :delete), method: :delete, class: "btn" %></span>
