@@ -6,7 +6,7 @@
   <% end %>
 
   <%= label f, :file %>
-  <%= file_input f, :file %>
+  <%= file_input f, :file, multiple: true %>
   <%= error_tag f, :file %>
 
   <%= label f, :email %>

@@ -10,6 +10,8 @@ defmodule CuotaProtoWeb.FileUploadController do
   alias CuotaProto.Util.Mailer
   alias CuotaProto.Util.Email
 
+  alias CuotaProto.Messages
+
   def index(conn, _params) do
     fileuploads = FileUploads.list_fileuploads()
     render(conn, "index.html", fileuploads: fileuploads)
@@ -24,8 +26,8 @@ defmodule CuotaProtoWeb.FileUploadController do
     IO.inspect(email_list)
     IO.puts("----------**")
 
-    Email.create_email()
-    |> Mailer.deliver_now!()
+    # Email.create_email()
+    # |> Mailer.deliver_now!()
     matter_list = Repo.all(Matter)
     |> Enum.map(& &1.name)
     render(conn, "new.html", changeset: changeset, emails: email_list, matters: matter_list)
@@ -33,23 +35,58 @@ defmodule CuotaProtoWeb.FileUploadController do
 
   def create(conn, %{"file_upload" => file_upload_params}) do
     IO.inspect(file_upload_params)
+
     file = file_upload_params["file"]
     IO.inspect(file)
-    {_, data} = File.read(file.path)
-    IO.inspect(data)
-    IO.inspect(file.filename)
-    mapdata = %{filedata: data, filename: file.filename}
-     case FileUploads.create_file_upload(mapdata) do
-      {:ok, file_upload} ->
-        conn
-         |> put_flash(:info, "File upload created successfully.")
-        |> redirect(to: Routes.file_upload_path(conn, :show, file_upload))
 
-       {:error, %Ecto.Changeset{} = changeset} ->
-         render(conn, "new.html", changeset: changeset)
-     end
-    #fileuploads = FileUploads.list_fileuploads()
-    #render(conn, "index.html", fileuploads: fileuploads)
+    filedata =
+    Enum.map(file, & File.read(&1.path))
+    |> Enum.map(fn {state, data} -> data end)
+    |> IO.inspect()
+
+    filename =
+    Enum.map(file, & &1.filename)
+    |> IO.inspect()
+
+    mapdata =
+    Enum.zip(filedata, filename)
+    |> Enum.map(fn {data, name} -> %{filedata: data, filename: name} end)
+    |> IO.inspect()
+
+
+    matter= Matter |> Repo.get_by(name: file_upload_params["matter"])
+    |> IO.inspect
+
+    user = User |> Repo.get_by(email: file_upload_params["email"])
+    |> IO.inspect
+
+    Enum.map(mapdata, fn data ->
+      case FileUploads.create_file_upload(data) do
+        {:ok, file_upload} ->
+          conn
+          |> put_flash(:info, "File upload created successfully.")
+          #|> redirect(to: Routes.file_upload_path(conn, :show, file_upload))
+
+        {:error, %Ecto.Changeset{} = changeset} ->
+          #render(conn, "new.html", changeset: changeset)
+          :error
+      end
+    end)
+
+    file_id = Enum.map(filename, & FileUpload |> Repo.get_by(filename: &1))
+    |> Enum.map(& &1.id)
+    |> IO.inspect
+
+    messagemap =
+    %{to_id: user.id, matter_id: matter.id, file_id: file_id}
+    |> IO.inspect
+    |> Messages.create_message()
+    |> IO.inspect
+
+    IO.puts("成功")
+
+    fileuploads = FileUploads.list_fileuploads()
+    render(conn, "index.html", fileuploads: fileuploads)
 
   end
 
@@ -59,9 +96,11 @@ defmodule CuotaProtoWeb.FileUploadController do
   end
 
   def edit(conn, %{"id" => id}) do
+    IO.inspect(id)
     file_upload = FileUploads.get_file_upload!(id)
-    changeset = FileUploads.change_file_upload(file_upload)
-    render(conn, "edit.html", file_upload: file_upload, changeset: changeset)
+    |> IO.inspect
+    #changeset = FileUploads.change_file_upload(file_upload)
+    render(conn, "edit.html", file_upload: file_upload)
   end
 
   def update(conn, %{"id" => id, "file_upload" => file_upload_params}) do
