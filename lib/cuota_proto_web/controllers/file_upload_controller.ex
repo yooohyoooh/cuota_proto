@@ -19,16 +19,23 @@ defmodule CuotaProtoWeb.FileUploadController do
 
   def new(conn, _params) do
     changeset = FileUploads.change_file_upload(%FileUpload{})
-    email_list = Repo.all(User)
-    |> Enum.map(& &1.email)
+    users_list = Repo.all(User)
+    usernames = Enum.map(users_list, & &1.user_name)
+    emails = Enum.map(users_list, & &1.email)
+    users =
+    Enum.zip(usernames, emails)
+    |> IO.inspect
+    |> Enum.map(fn {name, email} -> {"#{name}(#{email})", email} end)
 
     IO.puts("**----------")
-    IO.inspect(email_list)
+    IO.inspect(usernames)
+    IO.inspect(emails)
+    IO.inspect(users)
     IO.puts("----------**")
 
     matter_list = Repo.all(Matter)
     |> Enum.map(& &1.name)
-    render(conn, "new.html", changeset: changeset, emails: email_list, matters: matter_list)
+    render(conn, "new.html", changeset: changeset, emai_users: users, matters: matter_list)
   end
 
   def create(conn, %{"file_upload" => file_upload_params}) do
@@ -132,7 +139,9 @@ defmodule CuotaProtoWeb.FileUploadController do
     end
   end
 
-  def delete(conn, %{"id" => id}) do
+  def delete(conn, %{"id" => id} = params)do
+    IO.inspect(id)
+    IO.inspect(params)
     file_upload = FileUploads.get_file_upload!(id)
     {:ok, _file_upload} = FileUploads.delete_file_upload(file_upload)
 

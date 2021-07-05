@@ -14,7 +14,6 @@
       <td><%= file_upload.filename %></td>
 
       <td>
-        <span><%= link "Show", to: Routes.file_upload_path(@conn, :show, file_upload) %></span>
         <span><%= link "Delete", to: Routes.file_upload_path(@conn, :delete, file_upload), method: :delete, data: [confirm: "Are you sure?"] %></span>
       </td>
     </tr>
@@ -23,3 +22,4 @@
 </table>
 
 <span><%= link "New File upload", to: Routes.file_upload_path(@conn, :new) %></span>
+<span><%= button "全件削除", to: Routes.page_path(@conn, :delete), method: :delete, class: "btn" %></span>
