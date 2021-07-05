@@ -6,13 +6,18 @@
   <% end %>
 
   <%= label f, :file %>
-  <%= file_input f, :file %>
+  <%= file_input f, :file, multiple: true %>
   <%= error_tag f, :file %>
+  <p style="color: red">※複数選択できます</p>
 
-  <%= label f, :email %>
-  <%= select f, :email, @emails %>
+
+  <%= label f, :email%>
+  <%= multiple_select f, :email, @emails, style: "height: auto", size: "3"%>
   <%# <%= select f, :email, Enum.map(@emails, fn e -> Enum.at(e, 1) end) %> 
   <%= error_tag f, :email %>
+
+  <p style="color: red">※controll or comand + controllで複数選択できます</p>
+
 
   <%= label f, :matter %>
   <%= select f, :matter, @matters %>

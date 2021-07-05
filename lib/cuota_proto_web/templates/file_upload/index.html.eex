@@ -4,7 +4,6 @@
   <thead>
     <tr>
       <th>Filename</th>
-      <th>Filedata</th>
 
       <th></th>
     </tr>
@@ -13,11 +12,9 @@
 <%= for file_upload <- @fileuploads do %>
     <tr>
       <td><%= file_upload.filename %></td>
-      <td><%= file_upload.filedata %></td>
 
       <td>
         <span><%= link "Show", to: Routes.file_upload_path(@conn, :show, file_upload) %></span>
-        <span><%= link "Edit", to: Routes.file_upload_path(@conn, :edit, file_upload) %></span>
         <span><%= link "Delete", to: Routes.file_upload_path(@conn, :delete, file_upload), method: :delete, data: [confirm: "Are you sure?"] %></span>
       </td>
     </tr>
