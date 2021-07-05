@@ -6,7 +6,7 @@
   <% end %>
 
   <%= label f, :file %>
-  <%= file_input f, :file, multiple: true %>
+  <%= file_input f, :file, multiple: true, required: true%>
   <%= error_tag f, :file %>
   <p style="color: red">※複数選択できます</p>
 
