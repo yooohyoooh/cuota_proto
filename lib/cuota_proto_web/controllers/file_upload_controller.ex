@@ -17,7 +17,7 @@ defmodule CuotaProtoWeb.FileUploadController do
 
   alias CuotaProto.Messages
 
-  def index(conn, _params) do
+  def index_damey(conn) do
     all_data = Messages.list_messages()
     |> IO.inspect
 
@@ -74,7 +74,25 @@ defmodule CuotaProtoWeb.FileUploadController do
       datas = []
       render(conn, "index.html", datas: datas)
     end
+
   end
+
+  def index(conn, _params) do
+
+    user_email = conn.assigns.current_user.email
+    IO.puts("=====conn=====")
+    IO.inspect(conn)
+    IO.puts("=====conn=====")
+    IO.puts("=====user_email=====")
+    IO.inspect(user_email)
+    IO.puts("=====user_email=====")
+    index_damey(conn)
+  end
+
+
+
+
+
 
   def new(conn, _params) do
     changeset = FileUploads.change_file_upload(%FileUpload{})
@@ -96,6 +114,11 @@ defmodule CuotaProtoWeb.FileUploadController do
     |> Enum.map(& &1.name)
     render(conn, "new.html", changeset: changeset, emai_users: users, matters: matter_list)
   end
+
+
+
+
+
 
   def create(conn, %{"file_upload" => file_upload_params}) do
     IO.inspect(file_upload_params)
@@ -177,46 +200,6 @@ defmodule CuotaProtoWeb.FileUploadController do
       end
     end
 
-    fileuploads = FileUploads.list_fileuploads()
-    render(conn, "index.html", fileuploads: fileuploads)
-
-  end
-
-  def show(conn, %{"id" => id}) do
-    file_upload = FileUploads.get_file_upload!(id)
-    render(conn, "show.html", file_upload: file_upload)
-  end
-
-  def edit(conn, %{"id" => id}) do
-    IO.inspect(id)
-    file_upload = FileUploads.get_file_upload!(id)
-    |> IO.inspect
-    #changeset = FileUploads.change_file_upload(file_upload)
-    render(conn, "edit.html", file_upload: file_upload)
-  end
-
-  def update(conn, %{"id" => id, "file_upload" => file_upload_params}) do
-    file_upload = FileUploads.get_file_upload!(id)
-
-    case FileUploads.update_file_upload(file_upload, file_upload_params) do
-      {:ok, file_upload} ->
-        conn
-        |> put_flash(:info, "File upload updated successfully.")
-        |> redirect(to: Routes.file_upload_path(conn, :show, file_upload))
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "edit.html", file_upload: file_upload, changeset: changeset)
-    end
-  end
-
-  def delete(conn, %{"id" => id} = params)do
-    IO.inspect(id)
-    IO.inspect(params)
-    file_upload = FileUploads.get_file_upload!(id)
-    {:ok, _file_upload} = FileUploads.delete_file_upload(file_upload)
-
-    conn
-    |> put_flash(:info, "File upload deleted successfully.")
-    |> redirect(to: Routes.file_upload_path(conn, :index))
+    index_damey(conn)
   end
 end

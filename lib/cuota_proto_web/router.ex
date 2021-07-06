@@ -31,7 +31,7 @@ defmodule CuotaProtoWeb.Router do
 
     post "/path", PageController, :path
 
-    resources "/fileuploads", FileUploadController, only: [:index, :create, :new, :delete]
+    resources "/fileuploads", FileUploadController, only: [:index, :create, :new]
 
     resources "/messages", MessageController
 
