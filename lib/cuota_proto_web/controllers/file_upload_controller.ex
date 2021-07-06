@@ -1,5 +1,7 @@
 defmodule CuotaProtoWeb.FileUploadController do
   use CuotaProtoWeb, :controller
+  import Ecto.Query
+  import Plug.Conn
 
   alias CuotaProto.FileUploads
   alias CuotaProto.FileUploads.FileUpload
@@ -89,26 +91,29 @@ defmodule CuotaProtoWeb.FileUploadController do
     index_damey(conn)
   end
 
+  def new(conn, params) do
+    search_name = params["file_upload"]["search_name"]
 
+    IO.puts("*--------------------")
+    IO.inspect(params)
+    IO.puts("----------------------*")
 
-
-
-
-  def new(conn, _params) do
-    changeset = FileUploads.change_file_upload(%FileUpload{})
-    users_list = Repo.all(User)
-    usernames = Enum.map(users_list, & &1.user_name)
-    emails = Enum.map(users_list, & &1.email)
     users =
-    Enum.zip(usernames, emails)
-    |> IO.inspect
-    |> Enum.map(fn {name, email} -> {"#{name}(#{email})", email} end)
+      if search_name do
+        search_name_withp = "%" <> search_name <> "%"
+        query = from u in "users", where: like(u.email, ^search_name_withp), select: {u.user_name, u.email}
+        Repo.all(query)
+        |> Enum.map(fn {name, email} -> {"#{name}(#{email})", email} end)
 
-    IO.puts("**----------")
-    IO.inspect(usernames)
-    IO.inspect(emails)
-    IO.inspect(users)
-    IO.puts("----------**")
+      else
+        users_list = Repo.all(User)
+        usernames = Enum.map(users_list, & &1.user_name)
+        emails = Enum.map(users_list, & &1.email)
+        Enum.zip(usernames, emails)
+        |> Enum.map(fn {name, email} -> {"#{name}(#{email})", email} end)
+      end
+
+    changeset = FileUploads.change_file_upload(%FileUpload{})
 
     matter_list = Repo.all(Matter)
     |> Enum.map(& &1.name)
