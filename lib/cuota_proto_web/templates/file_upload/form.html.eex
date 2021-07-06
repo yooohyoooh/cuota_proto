@@ -21,14 +21,21 @@
   </form>
 -->
 
-  <%= multiple_select f, :email, @emai_users, style: "height: auto", size: "3", required: true%>
+  <%= multiple_select f, :email, @emai_users, style: "height: auto", size: "3", required: true, selected: @email_session%>
   <%# <%= select f, :email, Enum.map(@emails, fn e -> Enum.at(e, 1) end) %>
   <%= error_tag f, :email %>
+  <strong>追加した宛先</strong>
+  <%= if @email_session do %>
+    <%= for i <- @email_session do %>
+      <%= i %>
+    <% end %>
+  <% end %>  
 
   <%= label f, :要件 %>
   <%= select f, :matter, @matters, required: true%>
   <%= error_tag f, :matter %>
   <p style="color: red">※control or comand + control で複数選択できます</p>
+
 
   <%= label f, :ファイル %>
   <%= file_input f, :file, multiple: true, required: true%>

@@ -94,34 +94,41 @@ defmodule CuotaProtoWeb.FileUploadController do
   def new(conn, params) do
     search_name = params["file_upload"]["search_name"]
 
-    IO.puts("*--------------------")
+    IO.puts("*--------params----------")
     IO.inspect(params)
     IO.puts("----------------------*")
 
-    users =
-      if search_name do
-        search_name_withp = "%" <> search_name <> "%"
-        query = from u in "users", where: like(u.email, ^search_name_withp), select: {u.user_name, u.email}
-        Repo.all(query)
-        |> Enum.map(fn {name, email} -> {"#{name}(#{email})", email} end)
-
-      else
-        users_list = Repo.all(User)
-        usernames = Enum.map(users_list, & &1.user_name)
-        emails = Enum.map(users_list, & &1.email)
-        Enum.zip(usernames, emails)
-        |> Enum.map(fn {name, email} -> {"#{name}(#{email})", email} end)
-      end
-
+    users = search_email_by_name(search_name)
     changeset = FileUploads.change_file_upload(%FileUpload{})
-
     matter_list = Repo.all(Matter)
     |> Enum.map(& &1.name)
-    render(conn, "new.html", changeset: changeset, emai_users: users, matters: matter_list)
+
+    IO.puts("*--------status----------")
+    if params != %{} do
+      # paramsが空でない＝検索ワードが入っている時に、すでに選択されているアドレスをsessionにput
+      email_session
+      = put_session(conn, "email_session", params["file_upload"]["email"])
+      |> get_session("email_session")
+      render(conn, "new.html", changeset: changeset, emai_users: users, matters: matter_list, email_session: email_session)
+    end
+    render(conn, "new.html", changeset: changeset, emai_users: users, matters: matter_list, email_session: nil)
   end
 
+  def search_email_by_name(search_name) do
+    if search_name do
+      search_name_withp = "%" <> search_name <> "%"
+      query = from u in "users", where: like(u.email, ^search_name_withp), select: {u.user_name, u.email}
+      Repo.all(query)
+      |> Enum.map(fn {name, email} -> {"#{name}(#{email})", email} end)
 
-
+    else
+      users_list = Repo.all(User)
+      usernames = Enum.map(users_list, & &1.user_name)
+      emails = Enum.map(users_list, & &1.email)
+      Enum.zip(usernames, emails)
+      |> Enum.map(fn {name, email} -> {"#{name}(#{email})", email} end)
+    end
+  end
 
 
 
@@ -190,8 +197,10 @@ defmodule CuotaProtoWeb.FileUploadController do
       {:ok, _data} -> conn |> put_flash(:info, "登録できました。")
       {:error, _data} -> conn |> put_flash(:info, "登録できませんでした。")
     end
-    #IO.puts("成功")
-
+    # このタイミングでsessionに入っているemail_sessionを持ってきたいが、putしたはずなのに入っていない
+    IO.puts("========get_session==========")
+    IO.inspect(conn)
+    IO.puts("=========================")
     for email <- file_upload_params["email"] do
       mails =
       Email.create_email
