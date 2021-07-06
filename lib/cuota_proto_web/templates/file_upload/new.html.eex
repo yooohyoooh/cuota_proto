@@ -1,10 +1,4 @@
 <h1>New File upload</h1>
-<% 
-IO.puts("=====assigns=====")
-IO.inspect(assigns)
-IO.puts("=====assigns=====")
-
-%>
 
 <%= render "form.html", Map.put(assigns, :action, Routes.file_upload_path(@conn, :create)) %>
 
