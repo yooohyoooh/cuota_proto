@@ -1,3 +1,11 @@
+<label>宛先</label>
+
+    <%= form_for @changeset, Routes.file_upload_path(@conn, :new), [method: "get"], fn s -> %>
+      <%= text_input s, :search_name %>
+      <%= error_tag s, :search_name %>
+      <%= submit "検索" %>
+    <% end %>
+
 <%= form_for @changeset, @action, [multipart: true], fn f -> %>
   <%= if @changeset.action do %>
     <div class="alert alert-danger">
@@ -5,23 +13,30 @@
     </div>
   <% end %>
 
+
+<!--
+  <form action="/fileuploads/new" method="get">
+  <p><label>名前：<input type="text" name="search_name" size="40" maxlength="20"></label></p>
+  <p><input type="submit" value="検索2"></p>
+  </form>
+-->
+
+  <%= multiple_select f, :email, @emai_users, style: "height: auto", size: "3", required: true%>
+  <%# <%= select f, :email, Enum.map(@emails, fn e -> Enum.at(e, 1) end) %>
+  <%= error_tag f, :email %>
+
+  <%= label f, :要件 %>
+  <%= select f, :matter, @matters, required: true%>
+  <%= error_tag f, :matter %>
+  <p style="color: red">※control or comand + control で複数選択できます</p>
+
   <%= label f, :ファイル %>
   <%= file_input f, :file, multiple: true, required: true%>
   <%= error_tag f, :file %>
   <p style="color: red">※複数選択できます</p>
 
 
-  <%= label f, :宛先%>
-  <%= multiple_select f, :email, @emai_users, style: "height: auto", size: "3", required: true%>
-  <%# <%= select f, :email, Enum.map(@emails, fn e -> Enum.at(e, 1) end) %> 
-  <%= error_tag f, :email %>
 
-  <p style="color: red">※control or comand + control で複数選択できます</p>
-
-
-  <%= label f, :要件 %>
-  <%= select f, :matter, @matters, required: true%>
-  <%= error_tag f, :matter %>
 
   <div>
     <%= submit "送信" %>
