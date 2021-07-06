@@ -1,6 +1,7 @@
 defmodule CuotaProtoWeb.FileUploadController do
   use CuotaProtoWeb, :controller
   import Ecto.Query
+  import Plug.Conn
 
   alias CuotaProto.FileUploads
   alias CuotaProto.FileUploads.FileUpload
@@ -20,6 +21,10 @@ defmodule CuotaProtoWeb.FileUploadController do
 
   def new(conn, params) do
     search_name = params["file_upload"]["search_name"]
+
+    IO.puts("*--------------------")
+    IO.inspect(params)
+    IO.puts("----------------------*")
 
     users =
       if search_name do

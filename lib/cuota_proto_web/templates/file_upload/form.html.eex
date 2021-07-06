@@ -1,12 +1,12 @@
 <label>宛先</label>
 
-    <%= form_for @changeset, Routes.file_upload_path(@conn, :new), [method: "get"], fn s -> %>
-      <%= text_input s, :search_name %>
-      <%= error_tag s, :search_name %>
-      <%= submit "検索" %>
-    <% end %>
+    <%= form_for @changeset, @action, [multipart: true], fn f -> %>
+      <%= text_input f, :search_name %>
+      <%= error_tag f, :search_name %>
+      <%= submit "検索", formaction:  Routes.file_upload_path(@conn, :new),  formmethod: "get"%>
+    <%# end %>
 
-<%= form_for @changeset, @action, [multipart: true], fn f -> %>
+ <%#= form_for @changeset, @action, [multipart: true], fn f -> %>
   <%= if @changeset.action do %>
     <div class="alert alert-danger">
       <p>Oops, something went wrong! Please check the errors below.</p>
