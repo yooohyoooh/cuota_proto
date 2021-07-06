@@ -30,4 +30,14 @@ defmodule CuotaProtoWeb.PageController do
       _ -> conn |> put_flash(:info, "ファイルを全部削除しました。") |> redirect(to: Routes.file_upload_path(conn, :index))
     end
   end
+
+  def all_delete(conn, _) do
+    {state, _} = CuotaProto.Messages.Message |> CuotaProto.Repo.delete_all()
+    |> IO.inspect
+
+    case state do
+      0 -> conn |> put_flash(:info, "削除するデータがありませんでした。") |> redirect(to: Routes.file_upload_path(conn, :index))
+      _ -> conn |> put_flash(:info, "全件削除しました。") |> redirect(to: Routes.file_upload_path(conn, :index))
+    end
+  end
 end

@@ -25,7 +25,10 @@ defmodule CuotaProtoWeb.Router do
     post "/", PageController, :add_matter
 
     get "/to", PageController, :to
+
     delete "/delete", PageController, :delete
+    delete "/all_delete", PageController, :all_delete
+
     post "/path", PageController, :path
 
     resources "/fileuploads", FileUploadController, only: [:index, :create, :new, :delete]

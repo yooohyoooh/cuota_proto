@@ -1,0 +1,32 @@
+.file img{
+    width: 80px;
+}
+
+
+.file div{
+    height: auto;
+    display: flex;
+}
+
+.file text{
+    margin: auto;
+}
+
+.text p{
+    margin: auto 0;
+}
+
+.btn{
+    background-color: red;
+    border-color: red;
+}
+.btn:hover{
+    background-color: blue;
+}
+
+.nav{
+    display: flex;
+}
+.nav h3{
+    margin: auto 15px;
+}

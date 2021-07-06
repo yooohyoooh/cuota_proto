@@ -1,25 +1,60 @@
-<h1>Listing Fileuploads</h1>
+<h1>送信履歴</h1>
 
 <table>
   <thead>
     <tr>
-      <th>Filename</th>
-      <th>inserted_at</th>
-      <th></th>
+      <th>宛先</th>
+      <th>要件</th>
+      <th>ファイル名</th>
+      <th>送信日時</th>
     </tr>
   </thead>
   <tbody>
-<%= for file_upload <- @fileuploads do %>
-    <tr>
-      <td><%= file_upload.filename %></td>
-      <td><%= file_upload.inserted_at %></td>
-      <td>
-        <span><%= link "Delete", to: Routes.file_upload_path(@conn, :delete, file_upload), method: :delete, data: [confirm: "Are you sure?"] %></span>
-      </td>
-    </tr>
+<%= if @datas != [] do %>
+<% imgdata = ["7z", "ai", "css", "csv", "doc", "docx", "exe", "gif", "html", "ico", "jar", "jpg", "js", "mov", "mp3", "mp4", "pdf", "php", "png", "ppt", "pptx", "psd", "txt", "wav", "xlsx", "zip"]%>
+  <%= for data <- @datas do %>
+      <tr>
+        <td>
+        <%= for user <- data.user do %>
+          <p><%= user %></p>
+        <% end %>
+        </td>
+
+        <td>
+        <%= for matter <- data.matter do %>
+          <p><%= matter %></p>
+        <% end %>
+        </td>
+
+        <td>
+          <div class="file">
+          <%= for file <- data.file do %>
+            <% extension = List.last(String.split(file, ".")) %>
+            <%= if extension in imgdata == true do %>
+              <div class="text">
+                <img src="<%= Routes.static_path(@conn, "/images/File_icon/File_#{extension}.png") %>" alt="<%= "File_#{extension}.png"%>"/>
+                <p><%= file %></p>
+              </div>
+            <% else %>
+              <div class="text">
+                <img src="<%= Routes.static_path(@conn, "/images/File_icon/File_none.png") %>" alt="<%= "File_#{extension}.png"%>"/>
+                <p><%= file %></p>
+              </div>
+            <% end %>
+          <% end %>
+          </div>
+        </td>
+
+        <td>
+          <p><%= data.at %></p>
+        </td>
+      </tr>
+  <% end %>
 <% end %>
   </tbody>
 </table>
 
+
 <span><%= button "ファイル送信", to: Routes.file_upload_path(@conn, :new), method: :get, class: "btn"%></span>
-<span><%= button "全件削除", to: Routes.page_path(@conn, :delete), method: :delete, class: "btn" %></span>
+<span><%= button "全ファイル削除", to: Routes.page_path(@conn, :delete), method: :delete, class: "btn" %></span>
+<span><%= button "全件削除", to: Routes.page_path(@conn, :all_delete), method: :delete, class: "btn" %></span>
