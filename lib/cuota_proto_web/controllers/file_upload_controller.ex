@@ -148,30 +148,35 @@ defmodule CuotaProtoWeb.FileUploadController do
     end
   end
 
-
-
-  def create(conn, _params) do
-    #IO.inspect(file_upload_params)
-    file = get_session(conn, "file")
+  #ファイルをマップにする
+  def file_create(file_params) do
+    file = file_params
+    IO.puts("======get_session.conn=====")
     IO.inspect(file)
+    IO.puts("======get_session.conn=====")
 
     filedata =
     Enum.map(file, & File.read(&1.path))
     |> Enum.map(fn {_state, data} -> data end)
-    |> IO.inspect()
+
+    IO.puts("=======File.data======")
+    IO.inspect(filedata)
+    IO.puts("=======File.data======")
 
     filename =
     Enum.map(file, & &1.filename)
-    |> IO.inspect()
 
-    data = Enum.zip(filedata, filename)
+    Enum.zip(filedata, filename)
+    |>IO.inspect
 
-    mapdata =
-    data
-    |> Enum.map(fn {data, name} -> %{filedata: data, filename: name} end)
-    |> IO.inspect()
+  end
 
 
+  def create(conn, _params) do
+
+    IO.puts("====create.conn ========")
+    IO.inspect(get_session(conn, "file"))
+    IO.puts("====create.conn ========")
     matter= Matter |> Repo.get_by(name: get_session(conn, "matter"))
     |> IO.inspect
 
@@ -179,31 +184,9 @@ defmodule CuotaProtoWeb.FileUploadController do
     |> Enum.map(& &1.id)
     |> IO.inspect
 
-    file_upload_data =
-    Enum.map(mapdata, fn data ->
-      case FileUploads.create_file_upload(data) do
-        {:ok, file_upload} ->
-          conn
-          |> put_flash(:info, "File upload created successfully.")
-          file_upload
-          #|> redirect(to: Routes.file_upload_path(conn, :show, file_upload))
+    file_id = get_session(conn, "file")
+    file_data = Enum.map(file_id, & FileUpload |> Repo.get_by(id: &1))
 
-        {:error, _data} ->
-          #render(conn, "new.html", changeset: changeset)
-          :error
-      end
-    end)
-    IO.inspect(file_upload_data)
-
-    # file_id = Enum.map(filename, & FileUpload |> Repo.get_by(filename: &1))
-    # |> Enum.map(& &1.id)
-    # |> IO.inspect
-    file_id = Enum.map(file_upload_data, & &1.id)
-
-
-    IO.puts("========file_id==========")
-    IO.inspect(file_id)
-    IO.puts("=========================")
 
     messagemap =
     %{to_id: user_id, matter_id: [matter.id], file_id: file_id}
@@ -219,10 +202,10 @@ defmodule CuotaProtoWeb.FileUploadController do
       Email.create_email
       |> Bamboo.Email.to(email)
       mailfiles =
-      Enum.reduce(data, mails, fn {filedata, filename}, acc -> Bamboo.Email.put_attachment(acc, %Bamboo.Attachment{filename: filename, data: filedata})end)
+      Enum.reduce(file_data, mails, fn data, acc -> Bamboo.Email.put_attachment(acc, %Bamboo.Attachment{filename: data.filename, data: data.filedata})end)
       |> IO.inspect()
       case Mailer.deliver_now(mailfiles) do
-        {:ok, _data} -> conn |> put_flash(:info, "送信できました。") |> redirect(to: Routes.file_upload_path(conn, :index))
+        {:ok, _data} -> conn |> put_flash(:info, "送信されました。") |> redirect(to: Routes.file_upload_path(conn, :index))
         {:error, _data} -> conn |> put_flash(:info, "送信できませんでした。") |> redirect(to: Routes.file_upload_path(conn, :index))
       end
     end
@@ -230,10 +213,25 @@ defmodule CuotaProtoWeb.FileUploadController do
     end
 
   def preview(conn, %{"file_upload" => file_upload_params}) do
+    mapdata =
+    file_create(file_upload_params["file"])
+    |> Enum.map(fn {data, name} -> %{filedata: data, filename: name} end)
+
+    file_upload_data =
+    Enum.map(mapdata, fn data ->
+      case FileUploads.create_file_upload(data) do
+        {:ok, file_upload} -> file_upload
+
+        {:error, _data} -> :error
+      end
+    end)
+
+    file_id = Enum.map(file_upload_data, & &1.id)
+
 
     new_session
     = conn
-    |> put_session("file", file_upload_params["file"])
+    |> put_session("file", file_id)
     |> put_session("matter", file_upload_params["matter"])
 
     IO.puts("========preview========")
