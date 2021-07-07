@@ -30,3 +30,11 @@
 .nav h3{
     margin: auto 15px;
 }
+
+input.text_input {
+    width: 50%;
+}
+
+div.form_row {
+    vertical-align: center;
+}

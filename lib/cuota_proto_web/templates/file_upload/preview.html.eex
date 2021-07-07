@@ -10,9 +10,10 @@
 <% end %>
 
 <h2>件名</h2>
-<p><%= @matter %></p>
+<p><%= @subject %></p>
 
 <h2>本文</h2>
+<%= text_to_html(@body) %>
 <h2>添付ファイル</h2>
 
 <div class="file">
@@ -32,4 +33,5 @@
 <% end %>
 </div>
 
+<span><%= button "キャンセル", to: Routes.file_upload_path(@conn, :cancel_preview), method: :get, class: "btn"%></span>
 <span><%= button "メール送信", to: Routes.file_upload_path(@conn, :create), method: :post, class: "btn"%></span>

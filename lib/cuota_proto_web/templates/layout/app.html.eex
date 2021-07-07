@@ -16,8 +16,10 @@
         </nav>
         <nav class="nav">
         <h3><%= link "Cuota", to: Routes.page_path(@conn, :index), style: "color: rgb(79, 104, 112)"%></h3>
+        <%= if @current_user do %>
         <h3><%= link "送信履歴", to: Routes.file_upload_path(@conn, :index), style: "color: rgb(79, 104, 112)"%></h3>
         <h3><%= link "送信フォーム", to: Routes.file_upload_path(@conn, :new), style: "color: rgb(79, 104, 112)"%></h3>
+        <% end %>
         </nav>
       </section>
     </header>

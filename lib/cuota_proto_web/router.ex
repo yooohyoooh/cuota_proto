@@ -20,24 +20,6 @@ defmodule CuotaProtoWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
-
-    resources "/matters", MatterController
-    post "/", PageController, :add_matter
-
-    get "/to", PageController, :to
-
-    delete "/delete", PageController, :delete
-    delete "/all_delete", PageController, :all_delete
-
-    post "/path", PageController, :path
-
-    resources "/fileuploads", FileUploadController, only: [:index, :create, :new]
-    get "/fileuploads/set", FileUploadController, :set
-    get "/fileuploads/delete", FileUploadController, :delete
-    post "/fileuploads/preview", FileUploadController, :preview
-
-    resources "/messages", MessageController
-
   end
 
   # Other scopes may use custom stacks.
@@ -84,6 +66,24 @@ defmodule CuotaProtoWeb.Router do
     get "/users/settings", UserSettingsController, :edit
     put "/users/settings", UserSettingsController, :update
     get "/users/settings/confirm_email/:token", UserSettingsController, :confirm_email
+
+    resources "/matters", MatterController
+    post "/", PageController, :add_matter
+
+    get "/to", PageController, :to
+
+    delete "/delete", PageController, :delete
+    delete "/all_delete", PageController, :all_delete
+
+    post "/path", PageController, :path
+
+    resources "/fileuploads", FileUploadController, only: [:index, :create, :new]
+    get "/fileuploads/set", FileUploadController, :set
+    get "/fileuploads/delete", FileUploadController, :delete
+    post "/fileuploads/preview", FileUploadController, :preview
+    get "/fileuploads/cancel_preview", FileUploadController, :cancel_preview
+
+    resources "/messages", MessageController
   end
 
   scope "/", CuotaProtoWeb do

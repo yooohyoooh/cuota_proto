@@ -93,10 +93,13 @@ defmodule CuotaProtoWeb.FileUploadController do
   end
 
   def index(conn, _params) do
-
-    # user_email = conn.assigns.current_user.email
-
-    index_damey(delete_session(conn, "email_session"))
+    conn
+    |> delete_session("email_session")
+    |> delete_session("matter")
+    |> delete_session("file")
+    |> delete_session("body")
+    |> delete_session("subject")
+    |> index_damey()
   end
 
   def set(conn, params) do
@@ -130,6 +133,13 @@ defmodule CuotaProtoWeb.FileUploadController do
     matter_list = Repo.all(Matter)
     |> Enum.map(& &1.name)
     render(conn, "new.html", changeset: changeset, emai_users: users, matters: matter_list, email_session: get_session(conn, "email_session"))
+  end
+
+  def cancel_preview(conn, _params) do
+    get_session(conn, "file")
+    |> Enum.map(& FileUploads.get_file_upload!(&1))
+    |> Enum.map(& FileUploads.delete_file_upload(&1))
+    redirect(conn, to: Routes.file_upload_path(conn, :new))
   end
 
   def search_email_by_name(search_name) do
@@ -201,6 +211,9 @@ defmodule CuotaProtoWeb.FileUploadController do
       mails =
       Email.create_email
       |> Bamboo.Email.to(email)
+      |> Bamboo.Email.text_body(get_session(conn, "body"))
+      |> Bamboo.Email.from(conn.assigns.current_user.email)
+      |> Bamboo.Email.subject(get_session(conn, "subject"))
       mailfiles =
       Enum.reduce(file_data, mails, fn data, acc -> Bamboo.Email.put_attachment(acc, %Bamboo.Attachment{filename: data.filename, data: data.filedata})end)
       |> IO.inspect()
@@ -228,11 +241,32 @@ defmodule CuotaProtoWeb.FileUploadController do
 
     file_id = Enum.map(file_upload_data, & &1.id)
 
+    body =
+    case file_upload_params["matter"] do
+      "共有" ->
+        "いつもお世話になっております。\n\r資料を本メールに添付して共有いたします。\n\rお忙しいところ恐れ入りますが、ご確認よろしくお願いいたします。"
+      "提出" ->
+        "いつもお世話になっております。\n\r資料を本メールに添付して提出いたします。\n\rお忙しいところ恐れ入りますが、ご確認よろしくお願いいたします。"
+      "報告" ->
+        "いつもお世話になっております。\n\r報告資料を本メールに添付いたします。\n\rお忙しいところ恐れ入りますが、ご確認よろしくお願いいたします。"
+      _ ->
+        "用件はありません。"
+    end
+
+    subject =
+    case file_upload_params["matter"] do
+      "共有" -> "資料の共有"
+      "提出" -> "資料の提出"
+      "報告" -> "報告資料の提出"
+      _ -> "用件はありません"
+    end
 
     new_session
     = conn
     |> put_session("file", file_id)
     |> put_session("matter", file_upload_params["matter"])
+    |> put_session("body", body)
+    |> put_session("subject", subject)
 
     IO.puts("========preview========")
     IO.inspect(new_session)
@@ -248,7 +282,9 @@ defmodule CuotaProtoWeb.FileUploadController do
       from: conn.assigns.current_user.email,
       filename: filename,
       matter: file_upload_params["matter"],
-      emails: get_session(new_session, "email_session")
+      emails: get_session(new_session, "email_session"),
+      body: get_session(new_session, "body"),
+      subject: get_session(new_session, "subject")
       )
   end
 end
