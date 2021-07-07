@@ -1,6 +1,6 @@
 <section class="phx-hero">
-  <h1><%= gettext "Welcome to %{name}!", name: "Phoenix" %></h1>
-  <p>Peace of mind from prototype to production</p>
+  <h1>Cuotaへようこそ</h1>
+  <p><%= link "こちら", to: Routes.file_upload_path(@conn, :new)%>からメール送信フォームに移動できます</p>
 </section>
 
 <section class="row">

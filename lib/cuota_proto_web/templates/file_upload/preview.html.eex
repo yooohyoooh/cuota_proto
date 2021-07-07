@@ -1,37 +1,51 @@
 <% imgdata = ["7z", "ai", "css", "csv", "doc", "docx", "exe", "gif", "html", "ico", "jar", "jpg", "js", "mov", "mp3", "mp4", "pdf", "php", "png", "ppt", "pptx", "psd", "txt", "wav", "xlsx", "zip"]%>
 
 <h1>プレビュー</h1>
+<div class="preview_content">
+    <table class="preview">
+        <tr>
+            <th>FROM</th>
+            <td><%= @from %></td>
+        </tr>
+        <tr>
+            <th>TO</th>
+            <td>
+                <%= for e <- @emails do%>
+                    <div><%= e %></div>
+                <% end %>
+            </td>
+        </tr>
+        <tr>
+            <th>件名</th>
+            <td><%= @subject %></td>
+        </tr>
+        <tr>
+            <th></th>
+            <td class="preview_body"><div><%= text_to_html(@body) %></div></td>
+        </tr>
+        <tr>
+            <th></th>
+            <td class="file preview_file">
+            <%= for file <- @filename do %>
+                <% extension = List.last(String.split(file, ".")) %>
+                <%= if extension in imgdata == true do %>
+                    <div class="text">
+                        <img src="<%= Routes.static_path(@conn, "/images/File_icon/File_#{extension}.png") %>" alt="<%= "File_#{extension}.png"%>"/>
+                        <p><%= file %></p>
+                    </div>
+                <% else %>
+                    <div class="text">
+                        <img src="<%= Routes.static_path(@conn, "/images/File_icon/File_none.png") %>" alt="<%= "File_#{extension}.png"%>"/>
+                        <p><%= file %></p>
+                    </div>
+                <% end %>
+            <% end %>
+            </td>
+        </tr>
+    </table>
 
-<h2>差出人</h2>
-<%= @from %>
-<h2>宛先</h2>
-<%= for e <- @emails do%>
-<p><%= e %></p>
-<% end %>
-
-<h2>件名</h2>
-<p><%= @subject %></p>
-
-<h2>本文</h2>
-<%= text_to_html(@body) %>
-<h2>添付ファイル</h2>
-
-<div class="file">
-<%= for file <- @filename do %>
-<% extension = List.last(String.split(file, ".")) %>
-<%= if extension in imgdata == true do %>
-    <div class="text">
-    <img src="<%= Routes.static_path(@conn, "/images/File_icon/File_#{extension}.png") %>" alt="<%= "File_#{extension}.png"%>"/>
-    <p><%= file %></p>
+    <div class="preview_btn">
+        <span><%= button "キャンセル", to: Routes.file_upload_path(@conn, :cancel_preview), method: :get, class: "btn btn-cancel"%></span>
+        <span><%= button "メール送信", to: Routes.file_upload_path(@conn, :create), method: :post, class: "btn btn-deliver"%></span>
     </div>
-<% else %>
-    <div class="text">
-    <img src="<%= Routes.static_path(@conn, "/images/File_icon/File_none.png") %>" alt="<%= "File_#{extension}.png"%>"/>
-    <p><%= file %></p>
-    </div>
-<% end %>
-<% end %>
 </div>
-
-<span><%= button "キャンセル", to: Routes.file_upload_path(@conn, :cancel_preview), method: :get, class: "btn"%></span>
-<span><%= button "メール送信", to: Routes.file_upload_path(@conn, :create), method: :post, class: "btn"%></span>

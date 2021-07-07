@@ -1,5 +1,5 @@
 .root {
-    --maincolor: #101f3a;
+    --main-color: #101f3a;
 }
 header {
     background-color: #101f3a;
@@ -32,6 +32,12 @@ header .cuota{
     display: inline !important;
 }
 
+.preview_file {
+    display: flex;
+    padding-top: 50px;
+    flex-wrap: wrap;
+}
+
 .file img{
     width: 80px;
 }
@@ -42,12 +48,29 @@ header .cuota{
     display: flex;
 }
 
-.file text{
-    margin: auto;
+
+
+.file .text{
+    position: relative;
+    width: 20%;
+    margin-bottom: 30px;
 }
 
 .text p{
     margin: auto 0;
+}
+
+
+.preview_file .text p{
+    margin: auto 0;
+    position: absolute;
+    width: 80px;
+    top: 80px;
+    font-size: 12px;
+    overflow-wrap: break-word;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .btn{
@@ -77,4 +100,39 @@ input.text_input {
 
 .mail_session {
     margin-top: 0;
+}
+
+table.preview {
+    background-color: #eee;
+    padding: 20px;
+    width: 70%;
+    margin: 20px auto;
+    
+}
+
+table.preview th {
+    text-align: right;
+}
+
+.preview_body {
+    padding-top: 30px;
+}
+
+.btn-cancel {
+    background-color: gray;
+    border: none;
+}
+
+.btn-deliver{
+    background-color: #101f3a;
+    border: none;
+}
+
+.preview_content {
+    margin: auto;
+}
+
+.preview_btn {
+    margin: auto;
+    width: 70%;
 }
