@@ -6,32 +6,34 @@
       <p>Oops, something went wrong! Please check the errors below.</p>
     </div>
   <% end %>
-
-  <div class="form_row">
-    <%= text_input f, :search_name, class: "text_input" %>
-    <%= error_tag f, :search_name %>
-    <%= submit "検索", formaction:  Routes.file_upload_path(@conn, :new),  formmethod: "get"%>
-  </div>
-  <div class="form_row">
-    <%= multiple_select f, :email, @emai_users, style: "height: auto", size: "3", required: true, selected: @email_session%>
+  <div class="container">
+    <div class="row">
+      <%= text_input f, :search_name, class: "column column-50 formcolumn" %>
+      <%= error_tag f, :search_name %>
+      <%= submit "検索", formaction:  Routes.file_upload_path(@conn, :new),  formmethod: "get", class: "column column-10 formcolumn"%>
+    </div>
+  <div class="row">
+    <%= multiple_select f, :email, @emai_users, size: "3", required: true, selected: @email_session, class: "column column-50 formcolumn"%>
     <%= error_tag f, :email %>
-    <%= submit "追加", formaction:  Routes.file_upload_path(@conn, :set),  formmethod: "get"%>
+    <%= submit "追加", formaction:  Routes.file_upload_path(@conn, :set),  formmethod: "get", class: "column column-10 formcolumn"%>
   </div>
-  
+
   <%= if @email_session do %>
-    <p>選択した宛先</p>
-    <%= multiple_select f, :delete_email, @email_session%>
-    <%= submit "削除", formaction:  Routes.file_upload_path(@conn, :delete),  formmethod: "get"%>
+      <div class="formcolumn">選択した宛先</div>
+    <div class="row">
+      <%= multiple_select f, :delete_email, @email_session, class: "column column-50 formcolumn mail_session"%>
+      <%= submit "削除", formaction:  Routes.file_upload_path(@conn, :delete),  formmethod: "get", class: "column column-10 formcolumn"%>
+    </div>
   <% else %>
     <p>選択されていません。</p>
   <% end %>
+  </div>
 <% end %>
 
 <%= form_for @changeset, @action, [multipart: true], fn f -> %>
-  <%= label f, :要件 %>
-  <%= select f, :matter, @matters, required: true, selected: Plug.Conn.get_session(@conn, "matter")%>
+  <%= label f, :用件 %>
+  <%= select f, :matter, @matters, required: true, selected: Plug.Conn.get_session(@conn, "matter"), style: "width: 100px"%>
   <%= error_tag f, :matter %>
-  <p style="color: red">※control or comand + control で複数選択できます</p>
 
   <%= label f, :ファイル %>
   <%= file_input f, :file, multiple: true, required: true%>
