@@ -1,6 +1,6 @@
 <label>宛先</label>
 
-    <%= form_for @changeset, @action, [multipart: true], fn f -> %>
+<%= form_for @changeset, @action, [multipart: true], fn f -> %>
       <%= text_input f, :search_name %>
       <%= error_tag f, :search_name %>
       <%= submit "検索", formaction:  Routes.file_upload_path(@conn, :new),  formmethod: "get"%>
@@ -13,7 +13,6 @@
       <p>Oops, something went wrong! Please check the errors below.</p>
     </div>
   <% end %>
-
 
 <!--
   <form action="/fileuploads/new" method="get">
@@ -28,28 +27,27 @@
   <%IO.inspect(@email_session)%>
   <%= if @email_session do %>
     <p>選択した宛先</p>
-    <%= select f, :delete_email, @email_session, required: true%>
+    <%= multiple_select f, :delete_email, @email_session%>
     <%= submit "削除", formaction:  Routes.file_upload_path(@conn, :delete),  formmethod: "get"%>
 
   <% else %>
     <p>選択されていません。</p>
-  <% end %>  
+  <% end %>
 
+<% end %>
+
+<%= form_for @changeset, @action, [multipart: true], fn f -> %>
   <%= label f, :要件 %>
   <%= select f, :matter, @matters, required: true%>
   <%= error_tag f, :matter %>
   <p style="color: red">※control or comand + control で複数選択できます</p>
 
-
   <%= label f, :ファイル %>
-  <%= file_input f, :file, multiple: true%>
+  <%= file_input f, :file, multiple: true, required: true%>
   <%= error_tag f, :file %>
   <p style="color: red">※複数選択できます</p>
 
-
-
-
   <div>
-    <%= submit "送信" %>
+    <%= submit "送信プレビュー" %>
   </div>
 <% end %>

@@ -1,0 +1,35 @@
+<% imgdata = ["7z", "ai", "css", "csv", "doc", "docx", "exe", "gif", "html", "ico", "jar", "jpg", "js", "mov", "mp3", "mp4", "pdf", "php", "png", "ppt", "pptx", "psd", "txt", "wav", "xlsx", "zip"]%>
+
+<h1>プレビュー</h1>
+
+<h2>差出人</h2>
+<%= @from %>
+<h2>宛先</h2>
+<%= for e <- @emails do%>
+<p><%= e %></p>
+<% end %>
+
+<h2>件名</h2>
+<p><%= @matter %></p>
+
+<h2>本文</h2>
+<h2>添付ファイル</h2>
+
+<div class="file">
+<%= for file <- @filename do %>
+<% extension = List.last(String.split(file, ".")) %>
+<%= if extension in imgdata == true do %>
+    <div class="text">
+    <img src="<%= Routes.static_path(@conn, "/images/File_icon/File_#{extension}.png") %>" alt="<%= "File_#{extension}.png"%>"/>
+    <p><%= file %></p>
+    </div>
+<% else %>
+    <div class="text">
+    <img src="<%= Routes.static_path(@conn, "/images/File_icon/File_none.png") %>" alt="<%= "File_#{extension}.png"%>"/>
+    <p><%= file %></p>
+    </div>
+<% end %>
+<% end %>
+</div>
+
+<span><%= button "メール送信", to: Routes.file_upload_path(@conn, :create), method: :post, class: "btn"%></span>

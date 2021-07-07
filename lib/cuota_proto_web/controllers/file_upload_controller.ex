@@ -94,10 +94,7 @@ defmodule CuotaProtoWeb.FileUploadController do
 
   def index(conn, _params) do
 
-    user_email = conn.assigns.current_user.email
-    IO.puts("=====user_email=====")
-    IO.inspect(user_email)
-    IO.puts("=====user_email=====")
+    # user_email = conn.assigns.current_user.email
 
     index_damey(delete_session(conn, "email_session"))
   end
@@ -115,7 +112,7 @@ defmodule CuotaProtoWeb.FileUploadController do
   end
 
   def delete(conn, params) do
-    email_list = get_session(conn, "email_session") -- [params["file_upload"]["delete_email"]]
+    email_list = get_session(conn, "email_session") -- params["file_upload"]["delete_email"]
     new_session  = put_session(conn, "email_session", email_list)
     new_session |> put_flash(:info, "選択した宛先を選択解除しました。") |> redirect(to: Routes.file_upload_path(new_session, :new))
 
@@ -153,14 +150,10 @@ defmodule CuotaProtoWeb.FileUploadController do
 
 
 
-  def create(conn, %{"file_upload" => file_upload_params}) do
+  def create(conn, _params) do
     #IO.inspect(file_upload_params)
-    new_session = add_sesion(conn, "email_session", file_upload_params["email"])
-
-    file = file_upload_params["file"]
+    file = get_session(conn, "file")
     IO.inspect(file)
-
-
 
     filedata =
     Enum.map(file, & File.read(&1.path))
@@ -179,10 +172,10 @@ defmodule CuotaProtoWeb.FileUploadController do
     |> IO.inspect()
 
 
-    matter= Matter |> Repo.get_by(name: file_upload_params["matter"])
+    matter= Matter |> Repo.get_by(name: get_session(conn, "matter"))
     |> IO.inspect
 
-    user_id = Enum.map(get_session(new_session, "email_session"), &User |> Repo.get_by(email: &1))
+    user_id = Enum.map(get_session(conn, "email_session"), &User |> Repo.get_by(email: &1))
     |> Enum.map(& &1.id)
     |> IO.inspect
 
@@ -220,15 +213,8 @@ defmodule CuotaProtoWeb.FileUploadController do
       {:ok, _data} -> conn |> put_flash(:info, "登録できました。")
       {:error, _data} -> conn |> put_flash(:info, "登録できませんでした。")
     end
-    # このタイミングでsessionに入っているemail_sessionを持ってきたいが、putしたはずなのに入っていない
-    IO.puts("========get_session==========")
-    IO.inspect(conn)
-    IO.puts("=========================")
 
-    IO.puts("=====get_email_session=====")
-    IO.inspect(get_session(conn, "email_session"))
-    IO.puts("=====get_email_session=====")
-    for email <- get_session(new_session, "email_session") do
+    for email <- get_session(conn, "email_session") do
       mails =
       Email.create_email
       |> Bamboo.Email.to(email)
@@ -236,11 +222,35 @@ defmodule CuotaProtoWeb.FileUploadController do
       Enum.reduce(data, mails, fn {filedata, filename}, acc -> Bamboo.Email.put_attachment(acc, %Bamboo.Attachment{filename: filename, data: filedata})end)
       |> IO.inspect()
       case Mailer.deliver_now(mailfiles) do
-        {:ok, _data} -> conn |> put_flash(:info, "送信できました。")
-        {:error, _data} -> conn |> put_flash(:info, "送信できませんでした。")
+        {:ok, _data} -> conn |> put_flash(:info, "送信できました。") |> redirect(to: Routes.file_upload_path(conn, :index))
+        {:error, _data} -> conn |> put_flash(:info, "送信できませんでした。") |> redirect(to: Routes.file_upload_path(conn, :index))
       end
     end
 
-    index_damey(new_session)
+    end
+
+  def preview(conn, %{"file_upload" => file_upload_params}) do
+
+    new_session
+    = conn
+    |> put_session("file", file_upload_params["file"])
+    |> put_session("matter", file_upload_params["matter"])
+
+    IO.puts("========preview========")
+    IO.inspect(new_session)
+    IO.puts("========preview========")
+
+    filename =
+      Enum.map(file_upload_params["file"], & &1.filename)
+      |> IO.inspect()
+
+    render(
+      new_session,
+      "preview.html",
+      from: conn.assigns.current_user.email,
+      filename: filename,
+      matter: file_upload_params["matter"],
+      emails: get_session(new_session, "email_session")
+      )
   end
 end

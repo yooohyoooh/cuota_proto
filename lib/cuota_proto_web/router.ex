@@ -34,6 +34,7 @@ defmodule CuotaProtoWeb.Router do
     resources "/fileuploads", FileUploadController, only: [:index, :create, :new]
     get "/fileuploads/set", FileUploadController, :set
     get "/fileuploads/delete", FileUploadController, :delete
+    post "/fileuploads/preview", FileUploadController, :preview
 
     resources "/messages", MessageController
 
