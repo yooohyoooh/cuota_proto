@@ -82,6 +82,16 @@ defmodule CuotaProtoWeb.FileUploadController do
 
   end
 
+  def add_sesion(conn, sessionkey, data) do
+    if get_session(conn, sessionkey) do
+      mailedata = get_session(conn, sessionkey) ++ data |> Enum.uniq()
+      delete_session(conn, sessionkey)
+      put_session(conn, sessionkey, mailedata)
+    else
+      put_session(conn, sessionkey, data)
+    end
+  end
+
   def index(conn, _params) do
 
     user_email = conn.assigns.current_user.email
@@ -90,6 +100,25 @@ defmodule CuotaProtoWeb.FileUploadController do
     IO.puts("=====user_email=====")
 
     index_damey(delete_session(conn, "email_session"))
+  end
+
+  def set(conn, params) do
+    IO.puts("=====set_params=====")
+    IO.inspect(params)
+    IO.puts("=====set_params=====")
+    if params != %{} do
+      # paramsが空でない＝検索ワードが入っている時に、すでに選択されているアドレスをsessionにput
+      new_session = add_sesion(conn, "email_session", params["file_upload"]["email"])
+      new_session |> put_flash(:info, "登録できました。") |> redirect(to: Routes.file_upload_path(new_session, :new))
+
+    end
+  end
+
+  def delete(conn, params) do
+    email_list = get_session(conn, "email_session") -- [params["file_upload"]["delete_email"]]
+    new_session  = put_session(conn, "email_session", email_list)
+    new_session |> put_flash(:info, "選択した宛先を選択解除しました。") |> redirect(to: Routes.file_upload_path(new_session, :new))
+
   end
 
   def new(conn, params) do
@@ -103,19 +132,7 @@ defmodule CuotaProtoWeb.FileUploadController do
     changeset = FileUploads.change_file_upload(%FileUpload{})
     matter_list = Repo.all(Matter)
     |> Enum.map(& &1.name)
-
-    IO.puts("*--------status----------")
-    if params != %{} do
-      # paramsが空でない＝検索ワードが入っている時に、すでに選択されているアドレスをsessionにput
-      new_session = put_session(conn, "email_session", params["file_upload"]["email"])
-      email_session = get_session(new_session, "email_session")
-      IO.puts("=====email_session=====")
-      IO.inspect(email_session)
-      IO.puts("=====email_session=====")
-
-      render(new_session, "new.html", changeset: changeset, emai_users: users, matters: matter_list, email_session: email_session)
-    end
-    render(conn, "new.html", changeset: changeset, emai_users: users, matters: matter_list, email_session: nil)
+    render(conn, "new.html", changeset: changeset, emai_users: users, matters: matter_list, email_session: get_session(conn, "email_session"))
   end
 
   def search_email_by_name(search_name) do
@@ -138,9 +155,7 @@ defmodule CuotaProtoWeb.FileUploadController do
 
   def create(conn, %{"file_upload" => file_upload_params}) do
     #IO.inspect(file_upload_params)
-    mailedata = get_session(conn, "email_session") ++ file_upload_params["email"] |> Enum.uniq()
-    delete_session(conn, "email_session")
-    new_session = put_session(conn, "email_session", mailedata)
+    new_session = add_sesion(conn, "email_session", file_upload_params["email"])
 
     file = file_upload_params["file"]
     IO.inspect(file)
