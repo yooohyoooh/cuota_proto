@@ -123,16 +123,15 @@ defmodule CuotaProtoWeb.FileUploadController do
 
   def new(conn, params) do
     search_name = params["file_upload"]["search_name"]
-
-    IO.puts("*--------params----------")
-    IO.inspect(params)
-    IO.puts("----------------------*")
-
     users = search_email_by_name(search_name)
+
+    IO.puts("======users======")
+    IO.inspect(users)
+    IO.puts("======users======")
     changeset = FileUploads.change_file_upload(%FileUpload{})
     matter_list = Repo.all(Matter)
     |> Enum.map(& &1.name)
-    render(conn, "new.html", changeset: changeset, emai_users: users, matters: matter_list, email_session: get_session(conn, "email_session"))
+    render(conn, "new.html", changeset: changeset, emai_users: users -- [{"#{conn.assigns.current_user.user_name}(#{conn.assigns.current_user.email})", "#{conn.assigns.current_user.email}"}], matters: matter_list, email_session: get_session(conn, "email_session"))
   end
 
   def cancel_preview(conn, _params) do
@@ -156,6 +155,10 @@ defmodule CuotaProtoWeb.FileUploadController do
       Enum.zip(usernames, emails)
       |> Enum.map(fn {name, email} -> {"#{name}(#{email})", email} end)
     end
+  end
+
+  def all(conn, _params) do
+    redirect(conn, to: Routes.file_upload_path(conn, :new))
   end
 
   #ファイルをマップにする
