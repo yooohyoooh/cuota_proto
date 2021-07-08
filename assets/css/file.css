@@ -19,6 +19,11 @@ header .cuota{
     font-weight: bold;
 }
 
+h3.cuota_img img{
+    width: 50%;
+}
+
+
 
 .header h3.headertop{
     margin: 40px 0;

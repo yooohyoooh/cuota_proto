@@ -45,7 +45,7 @@
     </table>
 
     <div class="preview_btn">
-        <span><%= button "キャンセル", to: Routes.file_upload_path(@conn, :cancel_preview), method: :get, class: "btn btn-cancel"%></span>
-        <span><%= button "メール送信", to: Routes.file_upload_path(@conn, :create), method: :post, class: "btn btn-deliver"%></span>
+        <span><%= button "キャンセル", to: Routes.file_upload_path(@conn, :cancel_preview), method: :get, class: "btn btn-cancel", data: [confirm: "キャンセルする場合はもう一度ファイルを選択してください。"]%></span>
+        <span><%= button "メール送信", to: Routes.file_upload_path(@conn, :create), method: :post, class: "btn btn-deliver", data: [confirm: "送信しますか？"]%></span>
     </div>
 </div>

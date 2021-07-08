@@ -103,22 +103,26 @@ defmodule CuotaProtoWeb.FileUploadController do
   end
 
   def set(conn, params) do
-    IO.puts("=====set_params=====")
-    IO.inspect(params)
-    IO.puts("=====set_params=====")
-    if params != %{} do
-      # paramsが空でない＝検索ワードが入っている時に、すでに選択されているアドレスをsessionにput
-      new_session = add_sesion(conn, "email_session", params["file_upload"]["email"])
-      new_session |> put_flash(:info, "登録できました。") |> redirect(to: Routes.file_upload_path(new_session, :new))
-
+    case Map.fetch(params["file_upload"], "email") do
+      {:ok, _value} ->
+        new_session = add_sesion(conn, "email_session", params["file_upload"]["email"])
+        new_session |> put_flash(:info, "登録できました。") |> redirect(to: Routes.file_upload_path(new_session, :new))
+      :error -> conn |> put_flash(:info, "選択されていません。") |> redirect(to: Routes.file_upload_path(conn, :new))
     end
   end
 
   def delete(conn, params) do
-    email_list = get_session(conn, "email_session") -- params["file_upload"]["delete_email"]
-    new_session  = put_session(conn, "email_session", email_list)
-    new_session |> put_flash(:info, "選択した宛先を選択解除しました。") |> redirect(to: Routes.file_upload_path(new_session, :new))
+    IO.puts("=====delete_params=====")
+    IO.inspect(params)
+    IO.puts("=====delete_params=====")
+    case Map.fetch(params["file_upload"], "delete_email") do
+      {:ok, _value} ->
+        email_list = get_session(conn, "email_session") -- params["file_upload"]["delete_email"]
+        new_session  = put_session(conn, "email_session", email_list)
+        new_session |> put_flash(:info, "選択した宛先を選択解除しました。") |> redirect(to: Routes.file_upload_path(new_session, :new))
+      :error -> conn |> put_flash(:info, "選択されていません。") |> redirect(to: Routes.file_upload_path(conn, :new))
 
+    end
   end
 
   def new(conn, params) do
@@ -187,9 +191,9 @@ defmodule CuotaProtoWeb.FileUploadController do
 
   def create(conn, _params) do
 
-    IO.puts("====create.conn ========")
-    IO.inspect(get_session(conn, "file"))
-    IO.puts("====create.conn ========")
+    # IO.puts("====create.conn ========")
+    # IO.inspect(get_session(conn, "file"))
+    # IO.puts("====create.conn ========")
     matter= Matter |> Repo.get_by(name: get_session(conn, "matter"))
     |> IO.inspect
 
@@ -229,65 +233,73 @@ defmodule CuotaProtoWeb.FileUploadController do
     end
 
   def preview(conn, %{"file_upload" => file_upload_params}) do
-    mapdata =
-    file_create(file_upload_params["file"])
-    |> Enum.map(fn {data, name} -> %{filedata: data, filename: name} end)
-
-    file_upload_data =
-    Enum.map(mapdata, fn data ->
-      case FileUploads.create_file_upload(data) do
-        {:ok, file_upload} -> file_upload
-
-        {:error, _data} -> :error
-      end
-    end)
-
-    file_id = Enum.map(file_upload_data, & &1.id)
-
-    body =
-    case file_upload_params["matter"] do
-      "共有" ->
-        "いつもお世話になっております。\n\r資料を本メールに添付して共有いたします。\n\rお忙しいところ恐れ入りますが、ご確認よろしくお願いいたします。"
-      "提出" ->
-        "いつもお世話になっております。\n\r資料を本メールに添付して提出いたします。\n\rお忙しいところ恐れ入りますが、ご確認よろしくお願いいたします。"
-      "報告" ->
-        "いつもお世話になっております。\n\r報告資料を本メールに添付いたします。\n\rお忙しいところ恐れ入りますが、ご確認よろしくお願いいたします。"
+    IO.puts("=======review.conn========")
+    IO.inspect(get_session(conn, "email_session"))
+    IO.puts("=======review.conn========")
+    case get_session(conn, "email_session") do
+      nil -> conn |> put_flash(:info, "宛先が選択されていません。") |> redirect(to: Routes.file_upload_path(conn, :new))
+      [] -> conn |> put_flash(:info, "宛先が選択されていません。") |> redirect(to: Routes.file_upload_path(conn, :new))
       _ ->
-        "用件はありません。"
+      mapdata =
+      file_create(file_upload_params["file"])
+      |> Enum.map(fn {data, name} -> %{filedata: data, filename: name} end)
+
+      file_upload_data =
+      Enum.map(mapdata, fn data ->
+        case FileUploads.create_file_upload(data) do
+          {:ok, file_upload} -> file_upload
+
+          {:error, _data} -> :error
+        end
+      end)
+
+      file_id = Enum.map(file_upload_data, & &1.id)
+
+      body =
+      case file_upload_params["matter"] do
+        "共有" ->
+          "いつもお世話になっております。\n\r資料を本メールに添付して共有いたします。\n\rお忙しいところ恐れ入りますが、ご確認よろしくお願いいたします。"
+        "提出" ->
+          "いつもお世話になっております。\n\r資料を本メールに添付して提出いたします。\n\rお忙しいところ恐れ入りますが、ご確認よろしくお願いいたします。"
+        "報告" ->
+          "いつもお世話になっております。\n\r報告資料を本メールに添付いたします。\n\rお忙しいところ恐れ入りますが、ご確認よろしくお願いいたします。"
+        _ ->
+          "用件はありません。"
+      end
+
+      subject =
+      case file_upload_params["matter"] do
+        "共有" -> "資料の共有"
+        "提出" -> "資料の提出"
+        "報告" -> "報告資料の提出"
+        _ -> "用件はありません"
+      end
+
+      new_session
+      = conn
+      |> put_session("file", file_id)
+      |> put_session("matter", file_upload_params["matter"])
+      |> put_session("body", body)
+      |> put_session("subject", subject)
+
+      IO.puts("========preview========")
+      IO.inspect(new_session)
+      IO.puts("========preview========")
+
+      filename =
+        Enum.map(file_upload_params["file"], & &1.filename)
+        |> IO.inspect()
+
+      render(
+        new_session,
+        "preview.html",
+        from: conn.assigns.current_user.email,
+        filename: filename,
+        matter: file_upload_params["matter"],
+        emails: get_session(new_session, "email_session"),
+        body: get_session(new_session, "body"),
+        subject: get_session(new_session, "subject")
+        )
     end
-
-    subject =
-    case file_upload_params["matter"] do
-      "共有" -> "資料の共有"
-      "提出" -> "資料の提出"
-      "報告" -> "報告資料の提出"
-      _ -> "用件はありません"
-    end
-
-    new_session
-    = conn
-    |> put_session("file", file_id)
-    |> put_session("matter", file_upload_params["matter"])
-    |> put_session("body", body)
-    |> put_session("subject", subject)
-
-    IO.puts("========preview========")
-    IO.inspect(new_session)
-    IO.puts("========preview========")
-
-    filename =
-      Enum.map(file_upload_params["file"], & &1.filename)
-      |> IO.inspect()
-
-    render(
-      new_session,
-      "preview.html",
-      from: conn.assigns.current_user.email,
-      filename: filename,
-      matter: file_upload_params["matter"],
-      emails: get_session(new_session, "email_session"),
-      body: get_session(new_session, "body"),
-      subject: get_session(new_session, "subject")
-      )
   end
 end
