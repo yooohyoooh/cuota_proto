@@ -11,9 +11,10 @@
       <%= text_input f, :search_name, class: "column column-50 formcolumn" %>
       <%= error_tag f, :search_name %>
       <%= submit "検索", formaction:  Routes.file_upload_path(@conn, :new),  formmethod: "get", class: "column column-10 formcolumn"%>
+      <%= submit "全宛先表示", formaction:  Routes.file_upload_path(@conn, :all),  formmethod: "get", class: "column column-10 formcolumn"%>
     </div>
   <div class="row">
-    <%= multiple_select f, :email, @emai_users, size: "3", required: true, selected: @email_session, class: "column column-50 formcolumn"%>
+    <%= multiple_select f, :email, @emai_users, size: "3", selected: @email_session, class: "column column-50 formcolumn"%>
     <%= error_tag f, :email %>
     <%= submit "追加", formaction:  Routes.file_upload_path(@conn, :set),  formmethod: "get", class: "column column-10 formcolumn"%>
   </div>
