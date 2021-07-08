@@ -55,6 +55,6 @@
 </table>
 
 
-<span><%= button "ファイル送信", to: Routes.file_upload_path(@conn, :new), method: :get, class: "btn"%></span>
+<span><%= button "新規作成", to: Routes.file_upload_path(@conn, :new), method: :get, class: "btn btn-deliver"%></span>
 <span><%= button "全ファイル削除", to: Routes.page_path(@conn, :delete), method: :delete, class: "btn" %></span>
 <span><%= button "全件削除", to: Routes.page_path(@conn, :all_delete), method: :delete, class: "btn" %></span>
