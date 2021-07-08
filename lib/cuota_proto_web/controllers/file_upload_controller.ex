@@ -38,7 +38,7 @@ defmodule CuotaProtoWeb.FileUploadController do
 
       user =
       for data <- all_data do
-        Enum.map(data.to_id, &Accounts.get_user!(&1)) |> Enum.map(& if &1 != nil do "#{&1.user_name}(#{&1.email})" else "ユーザーが存在しません。" end)
+        Enum.map(data.to_id, & Repo.get_by(User, id: &1)) |> Enum.map(& if &1 != nil do "#{&1.user_name}(#{&1.email})" else "ユーザーが存在しません。" end)
       end
 
       IO.puts("-----user-----")
@@ -65,10 +65,10 @@ defmodule CuotaProtoWeb.FileUploadController do
 
       count = Enum.count(user)
 
-      datas =
+      datas = Enum.reverse(
       for num <- 1..count do
         %{matter: Enum.at(matter, num - 1), user: Enum.at(user, num - 1), file: Enum.at(file, num - 1), at: Enum.at(at, num - 1)}
-      end
+      end)
       IO.puts("=====data=====")
       IO.inspect(datas)
       IO.puts("=====data=====")
