@@ -23,11 +23,11 @@
         <div class="row">
           <div class="row">
             <h3 class="column column-15 headertop cuota_img"><%= link img_tag(Routes.static_path(@conn, "/images/cuotaimg/Cuota_logo01.png")), to: Routes.page_path(@conn, :index)%></h3>
-            <h3 class="column headertop cuota"><%= link "Cuota", to: Routes.page_path(@conn, :index)%></h3>
             <%= if @current_user do %>
-            <h3 class="column headertop"><%= link "送信履歴", to: Routes.file_upload_path(@conn, :index)%></h3>
-            <h3 class="column headertop"><%= link "送信フォーム", to: Routes.file_upload_path(@conn, :new)%></h3>
+            <h3 class="column headertop header_text"><%= link "新規作成", to: Routes.file_upload_path(@conn, :new)%></h3>
+            <h3 class="column headertop header_text"><%= link "送信履歴", to: Routes.file_upload_path(@conn, :index)%></h3>
             <% end %>
+            <div class="column"></div>
             <div class="column"></div>
           </div>
             <div class="acuntmenu"><%= render "_user_menu.html", assigns %></div>

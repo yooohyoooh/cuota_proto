@@ -1,6 +1,6 @@
 <section class="phx-hero">
   <h1>Cuotaへようこそ</h1>
-  <p><%= link "こちら", to: Routes.file_upload_path(@conn, :new)%>からメール送信フォームに移動できます</p>
+  <p><%= link "新規作成はこちら", to: Routes.file_upload_path(@conn, :new)%></p>
 </section>
 
 <section class="row">
