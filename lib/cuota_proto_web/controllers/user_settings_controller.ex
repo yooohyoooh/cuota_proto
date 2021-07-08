@@ -10,6 +10,19 @@ defmodule CuotaProtoWeb.UserSettingsController do
     render(conn, "edit.html")
   end
 
+  def delete(conn, params) do
+    IO.puts("======params======")
+    IO.inspect(params)
+    IO.puts("======params======")
+
+    delete_email = params["user"]["email"]
+    user = Accounts.User |> CuotaProto.Repo.get_by(email: delete_email)
+    case CuotaProto.Repo.delete(user) do
+      {:ok, _} -> conn|> put_flash(:info, "アカウントを削除しました。")|> redirect(to: Routes.page_path(conn, :index))
+      _ -> conn|> put_flash(:info, "アカウントを削除できませんでした。")|> redirect(to: Routes.page_path(conn, :index))
+    end
+  end
+
   def update(conn, %{"action" => "update_email"} = params) do
     %{"current_password" => password, "user" => user_params} = params
     user = conn.assigns.current_user
