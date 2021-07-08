@@ -7,15 +7,15 @@
     </div>
   <% end %>
   <div class="container">
-
-    <%= if @email_session do %>
+  <%= case @email_session do%>
+    <% nil -> %><p>選択されていません。</p>
+    <% [] -> %><p>選択されていません。</p>
+    <% _ -> %>
       <div class="formcolumn">選択した宛先</div>
       <div class="row">
         <%= multiple_select f, :delete_email, @email_session, class: "column column-50 formcolumn mail_session"%>
         <%= submit "削除", formaction:  Routes.file_upload_path(@conn, :delete),  formmethod: "get", class: "column column-10 formcolumn"%>
       </div>
-    <% else %>
-    <p>選択されていません。</p>
   <% end %>
   <div class="row">
     <%= multiple_select f, :email, @emai_users, size: "3", selected: @email_session, class: "column column-50 formcolumn"%>
