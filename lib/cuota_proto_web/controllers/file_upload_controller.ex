@@ -290,10 +290,11 @@ defmodule CuotaProtoWeb.FileUploadController do
     end
 
     for email <- get_session(conn, "email_session") do
+      email_user = User |> Repo.get_by(email: email)
       mails =
       Email.create_email
       |> Bamboo.Email.to(email)
-      |> Bamboo.Email.text_body(get_session(conn, "body"))
+      |> Bamboo.Email.text_body("#{email_user.user_name}様 \n\r #{get_session(conn, "body")}")
       |> Bamboo.Email.from(conn.assigns.current_user.email)
       |> Bamboo.Email.subject(get_session(conn, "subject"))
       mailfiles =
@@ -333,16 +334,14 @@ defmodule CuotaProtoWeb.FileUploadController do
       body =
       case file_upload_params["matter"] do
         "共有" ->
-          "いつもお世話になっております。\n\r資料を本メールに添付して共有いたします。\n\rお忙しいところ恐れ入りますが、ご確認よろしくお願いいたします。\n\r\n\r"
+          "いつもお世話になっております。\n\r資料を本メールに添付して共有いたします。\n\rお忙しいところ恐れ入りますが、ご確認よろしくお願いいたします。\n\r \n\r==================== \n\r#{conn.assigns.current_user.user_name} \n\remail： #{conn.assigns.current_user.email} \n\r==================== \n\r \n\r"
         "提出" ->
-          "いつもお世話になっております。\n\r資料を本メールに添付して提出いたします。\n\rお忙しいところ恐れ入りますが、ご確認よろしくお願いいたします。\n\r\n\r"
+          "いつもお世話になっております。\n\r資料を本メールに添付して提出いたします。\n\rお忙しいところ恐れ入りますが、ご確認よろしくお願いいたします。\n\r \n\r==================== \n\r#{conn.assigns.current_user.user_name} \n\remail： #{conn.assigns.current_user.email} \n\r==================== \n\r \n\r"
         "報告" ->
-          "いつもお世話になっております。\n\r報告資料を本メールに添付いたします。\n\rお忙しいところ恐れ入りますが、ご確認よろしくお願いいたします。\n\r\n\r"
+          "いつもお世話になっております。\n\r報告資料を本メールに添付いたします。\n\rお忙しいところ恐れ入りますが、ご確認よろしくお願いいたします。\n\r \n\r==================== \n\r#{conn.assigns.current_user.user_name} \n\remail： #{conn.assigns.current_user.email} \n\r==================== \n\r \n\r"
         _ ->
           "用件はありません。"
       end
-
-      body = body <> "\n\r\n\r" <> conn.assigns.current_user.user_name
 
       subject =
       case file_upload_params["matter"] do
@@ -363,6 +362,10 @@ defmodule CuotaProtoWeb.FileUploadController do
       IO.inspect(new_session)
       IO.puts("========preview========")
 
+      email_names =
+      Enum.map(get_session(new_session, "email_session"), & Repo.get_by(User, email: &1))
+      |> Enum.map(& "#{&1.user_name}様\n\r")
+
       filename =
         Enum.map(file_upload_params["file"], & &1.filename)
         |> IO.inspect()
@@ -375,6 +378,7 @@ defmodule CuotaProtoWeb.FileUploadController do
         matter: file_upload_params["matter"],
         emails: get_session(new_session, "email_session"),
         body: get_session(new_session, "body"),
+        email_names: email_names,
         subject: get_session(new_session, "subject")
         )
     end
