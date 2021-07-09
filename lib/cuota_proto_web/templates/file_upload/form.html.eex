@@ -1,47 +1,66 @@
-<label>宛先</label>
-
-<%= form_for @changeset, @action, [multipart: true], fn f -> %>
-  <%= if @changeset.action do %>
-    <div class="alert alert-danger">
-      <p>Oops, something went wrong! Please check the errors below.</p>
-    </div>
-  <% end %>
-  <div class="container">
-  <%= case @email_session do%>
-    <% nil -> %><p>選択されていません。</p>
-    <% [] -> %><p>選択されていません。</p>
-    <% _ -> %>
-      <div class="formcolumn">選択した宛先</div>
-      <div class="row">
-        <%= multiple_select f, :delete_email, @email_session, class: "column column-50 formcolumn mail_session"%>
-        <%= submit "削除", formaction:  Routes.file_upload_path(@conn, :delete),  formmethod: "get", class: "column column-10 formcolumn btn-deliver"%>
+  <%= form_for @changeset, @action, [multipart: true], fn f -> %>
+    <%= if @changeset.action do %>
+      <div class="alert alert-danger">
+        <p>Oops, something went wrong! Please check the errors below.</p>
       </div>
-  <% end %>
-  <div class="row">
-    <%= multiple_select f, :email, @emai_users, size: "3", selected: @email_session, class: "column column-50 formcolumn"%>
-    <%= error_tag f, :email %>
-    <%= submit "追加", formaction:  Routes.file_upload_path(@conn, :set),  formmethod: "get", class: "column column-10 formcolumn btn-deliver"%>
-  </div>  
-  </div>
+    <% end %>
+<div class="global-container">
     <div class="row">
-      <%= text_input f, :search_name, class: "column column-50 formcolumn", placeholder: "検索 例）gmail ...ect" %>
-      <%= error_tag f, :search_name %>
-      <%= submit "検索", formaction:  Routes.file_upload_path(@conn, :new),  formmethod: "get", class: "column column-10 formcolumn btn-deliver"%>
-      <%= submit "全宛先表示", formaction:  Routes.file_upload_path(@conn, :all),  formmethod: "get", class: "column column-10 formcolumn btn-deliver"%>
+      <div class="column column-55"><label class="top_label">宛先</label></div>
+      <div class="column column-40 column-offset-10"></div>
     </div>
-<% end %>
+    <div>
+      <div class="row">
+        <%= case @email_session do%>
+          <% nil -> %><p class="column column-55">選択されていません。</p>
+          <% [] -> %><p class="column column-55">選択されていません。</p>
+          <% _ -> %>
+            <div class="row column column-55">
+              <div class="formcolumn">選択した宛先</div>
+                  <%= multiple_select f, :delete_email, @email_session, class: "column formcolumn mail_session"%>
+                  <%= submit "削除", formaction:  Routes.file_upload_path(@conn, :delete),  formmethod: "get", class: "column column-10 formcolumn btn-deliver"%>
+            </div>
+        <% end %>
+          <div class="form_right column column-40 column-offset-10">
+            <div class="row">
+              <label>宛先選択</label>
+            </div>
+            <div class="row"> 
+              <%= text_input f, :search_name, class: "column column-70 formcolumn", placeholder: "検索 例）gmail..." %>
+              <%= error_tag f, :search_name %>
+              <%= submit "検索", formaction:  Routes.file_upload_path(@conn, :new),  formmethod: "get", class: "column column-20 formcolumn btn"%>
+              <%= submit "全宛先表示", formaction:  Routes.file_upload_path(@conn, :all),  formmethod: "get", class: "column column-20 formcolumn btn"%>
+            </div>
+            <div class="row">
+              <%= multiple_select f, :email, @emai_users, size: "3", selected: @email_session, class: "column column-70 formcolumn"%>
+              <%= error_tag f, :email %>
+              <%= submit "宛先へ追加", formaction:  Routes.file_upload_path(@conn, :set),  formmethod: "get", class: "column column-20 formcolumn btn"%>
+            </div> 
+          </div> 
+      </div>
+    </div>
+  <% end %>
 
-<%= form_for @changeset, @action, [multipart: true], fn f -> %>
-  <%= label f, :送信内容 %>
-  <%= select f, :matter, @matters, required: true, selected: Plug.Conn.get_session(@conn, "matter"), style: "width: 100px"%>
-  <%= error_tag f, :matter %>
+  <%= form_for @changeset, @action, [multipart: true], fn f -> %>
+    <div class="row">
+      <div class="column column-55">
+        <%= label f, :送信内容 %>
+        <%= select f, :matter, @matters, required: true, selected: Plug.Conn.get_session(@conn, "matter"), style: "width: 100px"%>
+        <%= error_tag f, :matter %>
+      </div>
+      <div class="column column-40 column-offset-10"></div>
+    </div>
 
-  <%= label f, :添付ファイル %>
-  <%= file_input f, :file, multiple: true, required: true %>
-  <%= error_tag f, :file %>
-  <!--<p style="color: red">※複数選択できます</p>-->
-
-  <div>
-    <%= submit "送信プレビュー" %>
+    <div class="row">
+      <div class="column column-55">
+        <%= label f, :添付ファイル %>
+        <%= file_input f, :file, multiple: true, required: true %>
+        <%= error_tag f, :file %>
+      </div>
+      <div class="column column-40 column-offset-10"></div>
+    </div>
   </div>
-<% end %>
+    <div>
+      <%= submit "送信画面へ", class: "btn-deliver"%>
+    </div>
+  <% end %>
