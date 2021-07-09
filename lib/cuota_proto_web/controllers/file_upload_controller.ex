@@ -206,8 +206,13 @@ defmodule CuotaProtoWeb.FileUploadController do
     |> Enum.map(& &1.name)
 
     email_session =
-    Enum.map(get_session(conn, "email_session"), & Repo.get_by(User, email: &1))
-    |> Enum.map(& {"#{&1.user_name}(#{&1.email})", &1.email})
+      if get_session(conn, "email_session") do
+        Enum.map(get_session(conn, "email_session"), & Repo.get_by(User, email: &1))
+        |> Enum.map(& {"#{&1.user_name}(#{&1.email})", &1.email})
+      else
+        nil
+      end
+
     render(conn, "new.html", changeset: changeset, emai_users: users -- [{"#{conn.assigns.current_user.user_name}(#{conn.assigns.current_user.email})", "#{conn.assigns.current_user.email}"}], matters: matter_list, email_session: email_session, selected: get_session(conn, "email_session"))
   end
 
