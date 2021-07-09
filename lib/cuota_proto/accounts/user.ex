@@ -9,6 +9,7 @@ defmodule CuotaProto.Accounts.User do
     field :hashed_password, :string
     field :confirmed_at, :naive_datetime
     field :user_name, :string
+    field :company_code, :string
 
     timestamps()
   end
@@ -32,8 +33,9 @@ defmodule CuotaProto.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:user_name, :email, :password])
+    |> cast(attrs, [:user_name, :email, :password, :company_code])
     |> validate_email()
+    |> validate_company_code()
     |> validate_password(opts)
   end
 
@@ -44,6 +46,15 @@ defmodule CuotaProto.Accounts.User do
     |> validate_length(:email, max: 160)
     |> unsafe_validate_unique(:email, CuotaProto.Repo)
     |> unique_constraint(:email)
+  end
+
+  def validate_company_code(changeset) do
+    changeset
+    |> validate_required([:company_code])
+    |> validate_format(:company_code, ~r/^[A-Z][0-9][0-9][0-9]+$/, message: "行頭にA~Zが必須で、その後に3桁の数字が必要です。スペースは使用できません。")
+    |> validate_length(:company_code, min: 4, max: 4)
+    # |> unsafe_validate_unique(:company_code, CuotaProto.Repo)
+    # |> unique_constraint(:company_code)
   end
 
   defp validate_password(changeset, opts) do
