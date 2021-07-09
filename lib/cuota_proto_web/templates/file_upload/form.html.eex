@@ -32,7 +32,7 @@
               <%= submit "全宛先表示", formaction:  Routes.file_upload_path(@conn, :all),  formmethod: "get", class: "column column-20 formcolumn btn"%>
             </div>
             <div class="row">
-              <%= multiple_select f, :email, @emai_users, size: "3", selected: @email_session, class: "column column-70 formcolumn"%>
+              <%= multiple_select f, :email, @emai_users, size: "3", selected: @selected, class: "column column-70 formcolumn"%>
               <%= error_tag f, :email %>
               <%= submit "宛先へ追加", formaction:  Routes.file_upload_path(@conn, :set),  formmethod: "get", class: "column column-20 formcolumn btn"%>
             </div> 
