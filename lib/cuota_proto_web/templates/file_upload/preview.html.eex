@@ -21,7 +21,12 @@
         </tr>
         <tr>
             <th></th>
-            <td class="preview_body"><div><%= text_to_html(@body) %></div></td>
+            <td class="preview_body">
+                <%= for name <- @email_names do%>
+                <div><%= text_to_html(name) %></div>
+                <% end %>
+                <div><%= text_to_html(@body) %></div>
+            </td>
         </tr>
         <tr>
             <th></th>
