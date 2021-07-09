@@ -204,7 +204,11 @@ defmodule CuotaProtoWeb.FileUploadController do
     changeset = FileUploads.change_file_upload(%FileUpload{})
     matter_list = Repo.all(Matter)
     |> Enum.map(& &1.name)
-    render(conn, "new.html", changeset: changeset, emai_users: users -- [{"#{conn.assigns.current_user.user_name}(#{conn.assigns.current_user.email})", "#{conn.assigns.current_user.email}"}], matters: matter_list, email_session: get_session(conn, "email_session"))
+
+    email_session =
+    Enum.map(get_session(conn, "email_session"), & Repo.get_by(User, email: &1))
+    |> Enum.map(& {"#{&1.user_name}(#{&1.email})", &1.email})
+    render(conn, "new.html", changeset: changeset, emai_users: users -- [{"#{conn.assigns.current_user.user_name}(#{conn.assigns.current_user.email})", "#{conn.assigns.current_user.email}"}], matters: matter_list, email_session: email_session, selected: get_session(conn, "email_session"))
   end
 
   def cancel_preview(conn, _params) do

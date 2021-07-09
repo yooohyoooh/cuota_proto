@@ -103,7 +103,7 @@ input.text_input {
 }
 
 .formcolumn{
-    margin: 20px 10px;
+    margin: 5px 10px;
 }
 
 .mail_session {
@@ -159,6 +159,14 @@ table.preview th {
     background-color: #eee;
 }
 
+.column-55 .row-left {
+    padding-top: 10px;
+}
+.column-55 .row {
+    padding-left: 10px;
+}
+
+
 /*
 .top_label {
     position: relative;
@@ -174,3 +182,7 @@ table.preview th {
     z-index: 0;
 }
 */
+
+.title-pad {
+    padding-top: 30px;
+}
