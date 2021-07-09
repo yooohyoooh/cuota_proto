@@ -80,12 +80,14 @@ h3.cuota_img img{
 }
 
 .btn{
-    background-color: red;
-    border-color: red;
+    background-color: gray;
+    border: none;
 }
 .btn:hover{
     background-color: blue;
 }
+
+
 
 /*
 .nav{
@@ -142,3 +144,33 @@ table.preview th {
     margin: auto;
     width: 70%;
 }
+
+/*
+.global-container {
+    background-color: #eee;
+}
+
+.column-40 {
+    background-color: white;
+}
+*/
+
+.column-55 {
+    background-color: #eee;
+}
+
+/*
+.top_label {
+    position: relative;
+}
+
+.back {
+    position: absolute;
+    top: 50px;
+    display: block;
+    height: 100px;
+    width: 60%;
+    background-color: #eee;
+    z-index: 0;
+}
+*/

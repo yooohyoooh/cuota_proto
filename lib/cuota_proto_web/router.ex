@@ -84,6 +84,7 @@ defmodule CuotaProtoWeb.Router do
     post "/fileuploads/preview", FileUploadController, :preview
     get "/fileuploads/cancel_preview", FileUploadController, :cancel_preview
     get "/fileuploads/all", FileUploadController, :all
+    get "/fileuploads/receive", FileUploadController, :receive
 
     resources "/messages", MessageController
   end

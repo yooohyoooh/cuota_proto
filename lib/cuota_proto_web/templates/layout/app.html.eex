@@ -4,7 +4,7 @@
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>CuotaProto · Phoenix Framework</title>
+    <title>CuotaProto</title>
     <link rel="shortcut icon" href="/images/cuotaimg/Cuota_logo01.png" type="image/x-icon">
     <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
     <script defer type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
@@ -27,8 +27,8 @@
             <%= if @current_user do %>
             <h3 class="column headertop header_text"><%= link "新規作成", to: Routes.file_upload_path(@conn, :new)%></h3>
             <h3 class="column headertop header_text"><%= link "送信履歴", to: Routes.file_upload_path(@conn, :index)%></h3>
+            <h3 class="column headertop header_text"><%= link "受信履歴", to: Routes.file_upload_path(@conn, :receive) %></h3>
             <% end %>
-            <div class="column"></div>
             <div class="column"></div>
           </div>
             <div class="acuntmenu"><%= render "_user_menu.html", assigns %></div>
