@@ -27,8 +27,8 @@
             <%= if @current_user do %>
             <h3 class="column headertop header_text"><%= link "新規作成", to: Routes.file_upload_path(@conn, :new)%></h3>
             <h3 class="column headertop header_text"><%= link "送信履歴", to: Routes.file_upload_path(@conn, :index)%></h3>
+            <h3 class="column headertop header_text"><%= link "受信履歴", to: Routes.file_upload_path(@conn, :receive) %></h3>
             <% end %>
-            <div class="column"></div>
             <div class="column"></div>
           </div>
             <div class="acuntmenu"><%= render "_user_menu.html", assigns %></div>

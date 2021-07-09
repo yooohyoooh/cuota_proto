@@ -18,13 +18,26 @@ defmodule CuotaProtoWeb.FileUploadController do
   alias CuotaProto.Util.Email
 
   alias CuotaProto.Messages
+  alias CuotaProto.Messages.Message
 
   def index_damey(conn) do
     IO.puts("=====delete_conn_session=====")
     IO.inspect(conn)
     IO.puts("=====delete_conn_session=====")
-    all_data = Messages.list_messages()
-    |> IO.inspect
+    #all_data = Messages.list_messages()
+    IO.puts("======my_email======")
+    IO.inspect(conn.assigns.current_user)
+    IO.puts("======my_email======")
+    my_id = Repo.get_by(User, email: conn.assigns.current_user.email)
+
+    IO.puts("======all_my_email======")
+    IO.inspect(my_id.id)
+    IO.puts("======all_my_email======")
+
+    all_data = Message |> where(user_id: ^my_id.id) |> Repo.all
+    IO.puts("-----all_data-----")
+    IO.inspect(all_data)
+    IO.puts("-----all_data-----")
 
     if all_data != [] do
       matter =
@@ -102,6 +115,62 @@ defmodule CuotaProtoWeb.FileUploadController do
     |> index_damey()
   end
 
+  def receive(conn, _params) do
+    conn
+    |> delete_session("email_session")
+    |> delete_session("matter")
+    |> delete_session("file")
+    |> delete_session("body")
+    |> delete_session("subject")
+    |> receive_damey()
+  end
+
+  def receive_damey(conn) do
+    my_id = Repo.get_by(User, email: conn.assigns.current_user.email)
+
+    all_data = Message |> where(to_id: ^[my_id.id]) |> Repo.all
+
+    if all_data != [] do
+      matter =
+      for data <- all_data do
+        Enum.map(data.matter_id, &Businesses.get_matter!(&1)) |> Enum.map(& if &1 != nil do &1.name else "要件がありません。" end)
+      end
+
+      user =
+      for data <- all_data do
+        Enum.map([data.user_id], & Repo.get_by(User, id: &1)) |> Enum.map(& if &1 != nil do "#{&1.user_name}(#{&1.email})" else "ユーザーが存在しません。" end)
+      end
+
+      file =
+      for data <- all_data do
+        Enum.map(data.file_id, &FileUpload |> Repo.get_by(id: &1)) |> Enum.map(& if &1 != nil do &1.filename else "ファイルがありません" end)
+      end
+
+      at =
+      for data <- all_data do
+        data.inserted_at
+      end
+
+      count = Enum.count(user)
+
+      datas = Enum.reverse(
+      for num <- 1..count do
+        %{matter: Enum.at(matter, num - 1), user: Enum.at(user, num - 1), file: Enum.at(file, num - 1), at: Enum.at(at, num - 1)}
+      end)
+      IO.puts("=====data=====")
+      IO.inspect(datas)
+      IO.puts("=====data=====")
+
+      render(conn, "receive.html", datas: datas)
+
+    else
+      datas = []
+      render(conn, "receive.html", datas: datas)
+    end
+
+  end
+
+
   def set(conn, params) do
     case Map.fetch(params["file_upload"], "email") do
       {:ok, _value} ->
@@ -127,7 +196,7 @@ defmodule CuotaProtoWeb.FileUploadController do
 
   def new(conn, params) do
     search_name = params["file_upload"]["search_name"]
-    users = search_email_by_name(search_name)
+    users = search_email_by_name(conn, search_name)
 
     IO.puts("======users======")
     IO.inspect(users)
@@ -145,15 +214,18 @@ defmodule CuotaProtoWeb.FileUploadController do
     redirect(conn, to: Routes.file_upload_path(conn, :new))
   end
 
-  def search_email_by_name(search_name) do
+  def search_email_by_name(conn, search_name) do
     if search_name do
       search_name_withp = "%" <> search_name <> "%"
-      query = from u in "users", where: like(u.email, ^search_name_withp), select: {u.user_name, u.email}
-      Repo.all(query)
+      User
+      |> where(company_code: ^conn.assigns.current_user.company_code)
+      |> where([u],like(u.email, ^search_name_withp))
+      |> select([u],{u.user_name, u.email})
+      |> Repo.all()
       |> Enum.map(fn {name, email} -> {"#{name}(#{email})", email} end)
 
     else
-      users_list = Repo.all(User)
+      users_list = User |> where(company_code: ^conn.assigns.current_user.company_code) |> Repo.all
       usernames = Enum.map(users_list, & &1.user_name)
       emails = Enum.map(users_list, & &1.email)
       Enum.zip(usernames, emails)
@@ -197,16 +269,19 @@ defmodule CuotaProtoWeb.FileUploadController do
     matter= Matter |> Repo.get_by(name: get_session(conn, "matter"))
     |> IO.inspect
 
-    user_id = Enum.map(get_session(conn, "email_session"), &User |> Repo.get_by(email: &1))
+    to_id = Enum.map(get_session(conn, "email_session"), &User |> Repo.get_by(email: &1))
     |> Enum.map(& &1.id)
     |> IO.inspect
 
     file_id = get_session(conn, "file")
     file_data = Enum.map(file_id, & FileUpload |> Repo.get_by(id: &1))
 
+    user_id = Repo.get_by(User, email: conn.assigns.current_user.email)
+
+
 
     messagemap =
-    %{to_id: user_id, matter_id: [matter.id], file_id: file_id}
+    %{to_id: to_id, matter_id: [matter.id], file_id: file_id, user_id: user_id.id}
     |> IO.inspect
 
     case Messages.create_message(messagemap) do
@@ -230,7 +305,7 @@ defmodule CuotaProtoWeb.FileUploadController do
       end
     end
 
-    end
+  end
 
   def preview(conn, %{"file_upload" => file_upload_params}) do
     IO.puts("=======review.conn========")
